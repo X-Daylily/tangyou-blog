@@ -15,24 +15,51 @@ const isActive = href === pathname || href === '/' + (subpath?.[0] || '');
 
 <style>
 	.nav-link {
+		position: relative;
 		display: inline-block;
-		padding: 0.4em 0.85em;
+		padding: 0.44em 0.95em;
 		border-radius: 999px;
 		color: var(--text-muted);
 		font-size: 0.95rem;
+		letter-spacing: 0.08em;
+		white-space: nowrap;
 		text-decoration: none;
 		transition:
-			background-color 0.2s ease,
-			color 0.2s ease;
+			color 0.28s ease,
+			background-color 0.28s ease,
+			box-shadow 0.28s ease;
 	}
 	.nav-link:hover {
 		color: var(--text);
-		background: var(--bg-soft);
+		background: var(--accent-soft);
 		text-decoration: none;
 	}
 	.nav-link.active {
+		border: 1px solid transparent;
+		background:
+			linear-gradient(var(--accent-soft), var(--accent-soft)) padding-box,
+			linear-gradient(135deg, var(--glow-1), var(--glow-3)) border-box;
 		color: var(--accent);
-		background: var(--accent-soft);
 		font-weight: 600;
+		box-shadow: var(--inner-top);
+	}
+	.nav-link.active::after {
+		content: '';
+		position: absolute;
+		left: 50%;
+		bottom: 0.08em;
+		transform: translateX(-50%) rotate(45deg);
+		width: 4px;
+		height: 4px;
+		background: var(--grad-gold);
+		box-shadow: 0 0 10px var(--glow-1);
+	}
+
+	@media (max-width: 640px) {
+		.nav-link {
+			padding: 0.4em 0.6em;
+			font-size: 0.88rem;
+			letter-spacing: 0.02em;
+		}
 	}
 </style>

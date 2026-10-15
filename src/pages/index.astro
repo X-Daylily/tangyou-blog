@@ -4,6 +4,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import Ornament from '../components/Ornament.astro';
 import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 const posts = (await getCollection('blog'))
@@ -17,73 +18,139 @@ const posts = (await getCollection('blog'))
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
 			main {
-				max-width: 860px;
+				max-width: 900px;
 			}
+
+			/* ————— 首屏 ————— */
 			.hero {
-				padding: 2rem 0 3rem;
+				position: relative;
+				padding: 4.5rem 0 1rem;
+				text-align: center;
 			}
+			.orb {
+				position: absolute;
+				border-radius: 50%;
+				filter: blur(46px);
+				pointer-events: none;
+				z-index: 0;
+				animation: drift 22s ease-in-out infinite;
+			}
+			.orb-1 {
+				top: -8rem;
+				left: 50%;
+				translate: -50% 0;
+				width: min(600px, 94vw);
+				height: min(600px, 94vw);
+				background: radial-gradient(circle, var(--bloom-1), transparent 64%);
+			}
+			.orb-2 {
+				top: 1rem;
+				right: -8rem;
+				width: min(420px, 74vw);
+				height: min(420px, 74vw);
+				background: radial-gradient(circle, var(--bloom-3), transparent 66%);
+				animation-duration: 29s;
+				animation-delay: -7s;
+			}
+			.spark {
+				position: absolute;
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				background: var(--grad-gold);
+				box-shadow: 0 0 14px var(--glow-1);
+				pointer-events: none;
+				z-index: 0;
+				animation: floaty 7s ease-in-out infinite;
+			}
+			.s1 {
+				top: 14%;
+				left: 13%;
+			}
+			.s2 {
+				top: 34%;
+				right: 11%;
+				animation-delay: -2.3s;
+			}
+			.s3 {
+				top: 68%;
+				left: 9%;
+				animation-delay: -4.6s;
+			}
+
+			.hero-inner {
+				position: relative;
+				z-index: 1;
+				max-width: 640px;
+				margin: 0 auto;
+				padding: 2.6rem 2rem;
+			}
+			/* 四角鎏金装饰框 */
+			.hero-inner::before,
+			.hero-inner::after {
+				content: '';
+				position: absolute;
+				width: 30px;
+				height: 30px;
+				border: 1px solid var(--border-strong);
+				pointer-events: none;
+			}
+			.hero-inner::before {
+				top: 0;
+				left: 0;
+				border-right: none;
+				border-bottom: none;
+				border-radius: 12px 0 0 0;
+			}
+			.hero-inner::after {
+				bottom: 0;
+				right: 0;
+				border-left: none;
+				border-top: none;
+				border-radius: 0 0 12px 0;
+			}
+
 			.eyebrow {
-				margin: 0 0 0.6rem;
+				margin: 0 0 1.1rem;
+				font-size: 0.8rem;
+				letter-spacing: 0.5em;
+				text-indent: 0.5em;
 				color: var(--accent);
-				font-weight: 600;
-				letter-spacing: 0.02em;
 			}
 			.hero h1 {
-				margin: 0 0 0.8rem;
+				margin: 0 0 1.1rem;
+				letter-spacing: 0.07em;
+				text-shadow: 0 2px 24px rgba(198, 152, 78, 0.24);
 			}
 			.lead {
-				font-size: 1.15rem;
+				max-width: 26em;
+				margin: 0 auto;
+				font-size: 1.08rem;
 				color: var(--text-muted);
-				max-width: 34em;
+				letter-spacing: 0.04em;
 			}
 			.cta {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 0.75rem;
-				margin-top: 1.5rem;
+				justify-content: center;
+				gap: 0.9rem;
+				margin-top: 2.2rem;
 			}
-			.btn {
-				display: inline-block;
-				padding: 0.65em 1.3em;
-				border-radius: 999px;
-				background: var(--accent);
-				color: #fff;
-				font-weight: 600;
-				font-size: 0.95rem;
-				text-decoration: none;
-				box-shadow: var(--shadow-sm);
-				transition:
-					transform 0.2s ease,
-					background-color 0.2s ease;
-			}
-			.btn:hover {
-				background: var(--accent-strong);
-				color: #fff;
-				transform: translateY(-2px);
-				text-decoration: none;
-			}
-			.btn.ghost {
-				background: transparent;
-				color: var(--text);
-				border: 1px solid var(--border);
-				box-shadow: none;
-			}
-			.btn.ghost:hover {
-				border-color: var(--accent);
-				color: var(--accent);
-			}
+
+			/* ————— 最新文章 ————— */
 			.section-head {
 				display: flex;
 				align-items: baseline;
 				justify-content: space-between;
 				gap: 1rem;
-				margin-bottom: 1.2rem;
+				margin-bottom: 0.4rem;
 			}
 			.section-head h2 {
 				margin: 0;
 			}
 			.section-head a {
-				font-size: 0.9rem;
+				font-size: 0.88rem;
+				letter-spacing: 0.12em;
 			}
 			.post-list {
 				list-style: none;
@@ -94,26 +161,64 @@ const posts = (await getCollection('blog'))
 				margin: 0;
 			}
 			.post-list a {
+				position: relative;
 				display: flex;
 				align-items: baseline;
 				justify-content: space-between;
 				gap: 1rem;
-				padding: 1rem 0.2rem;
-				border-bottom: 1px solid var(--border);
+				padding: 1.15rem 0.3rem 1.15rem 1.5rem;
 				color: var(--text);
 				text-decoration: none;
+				transition: padding-left 0.35s ease, color 0.35s ease;
+			}
+			.post-list a::before {
+				content: '';
+				position: absolute;
+				left: 0.2rem;
+				top: 50%;
+				transform: translateY(-50%) rotate(45deg);
+				width: 6px;
+				height: 6px;
+				background: var(--grad-gold);
+				opacity: 0.55;
+				transition: opacity 0.35s ease, box-shadow 0.35s ease;
+			}
+			.post-list li + li a {
+				border-top: 1px solid var(--border);
 			}
 			.post-list a:hover {
+				padding-left: 2rem;
 				color: var(--accent);
 				text-decoration: none;
 			}
+			.post-list a:hover::before {
+				opacity: 1;
+				box-shadow: 0 0 12px var(--glow-1);
+			}
 			.post-list .t {
+				font-family: var(--font-display);
+				font-size: 1.1rem;
 				font-weight: 600;
+				letter-spacing: 0.04em;
 			}
 			.post-list .d {
 				color: var(--text-muted);
-				font-size: 0.9rem;
+				font-size: 0.85rem;
+				letter-spacing: 0.06em;
 				white-space: nowrap;
+			}
+
+			@media (max-width: 720px) {
+				.hero {
+					padding-top: 3rem;
+				}
+				.hero-inner {
+					padding: 1.8rem 0.6rem;
+				}
+				.hero-inner::before,
+				.hero-inner::after {
+					display: none;
+				}
 			}
 		</style>
 	</head>
@@ -121,14 +226,26 @@ const posts = (await getCollection('blog'))
 		<Header />
 		<main id="main-content">
 			<section class="hero">
-				<p class="eyebrow">你好 👋</p>
-				<h1>我是{SITE_AUTHOR}</h1>
-				<p class="lead">{SITE_DESCRIPTION}</p>
-				<div class="cta">
-					<a class="btn" href="/blog/">阅读文章</a>
-					<a class="btn ghost" href="/about/">关于我</a>
+				<span class="orb orb-1" aria-hidden="true"></span>
+				<span class="orb orb-2" aria-hidden="true"></span>
+				<span class="spark s1" aria-hidden="true"></span>
+				<span class="spark s2" aria-hidden="true"></span>
+				<span class="spark s3" aria-hidden="true"></span>
+
+				<div class="hero-inner rise">
+					<p class="eyebrow">✦ 你好 ✦</p>
+					<h1>
+						我是<span class="gradient-text">{SITE_AUTHOR}</span>
+					</h1>
+					<p class="lead">{SITE_DESCRIPTION}</p>
+					<div class="cta">
+						<a class="btn" href="/blog/">阅读文章</a>
+						<a class="btn ghost" href="/about/">关于我</a>
+					</div>
 				</div>
 			</section>
+
+			<Ornament />
 
 			<section>
 				<div class="section-head">

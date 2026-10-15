@@ -5,6 +5,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
+import Ornament from '../../components/Ornament.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog'))
@@ -21,16 +22,23 @@ const posts = (await getCollection('blog'))
 				padding-top: 2.5rem;
 			}
 			.page-title {
-				margin: 0 0 2rem;
+				text-align: center;
+			}
+			.page-title h1 {
+				margin: 0;
+				letter-spacing: 0.12em;
 			}
 			.page-title p {
-				margin: 0.3rem 0 0;
+				margin: 0.5rem 0 0;
 				color: var(--text-muted);
+				font-size: 0.85rem;
+				letter-spacing: 0.28em;
 			}
+
 			.posts {
 				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-				gap: 1.5rem;
+				grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+				gap: 1.9rem;
 				list-style: none;
 				margin: 0;
 				padding: 0;
@@ -38,69 +46,145 @@ const posts = (await getCollection('blog'))
 			.posts li {
 				margin: 0;
 			}
+
+			/* 琉璃卡片：鎏金描边 + 四角饰角 */
 			.card {
+				position: relative;
 				display: flex;
 				flex-direction: column;
 				height: 100%;
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: var(--radius-lg);
 				overflow: hidden;
-				box-shadow: var(--shadow-sm);
+				border: 1px solid transparent;
+				border-radius: var(--radius-lg);
+				background:
+					linear-gradient(var(--surface), var(--surface)) padding-box,
+					linear-gradient(
+							135deg,
+							var(--glow-1),
+							var(--glow-2) 44%,
+							var(--glow-3) 70%,
+							var(--glow-1)
+						)
+						border-box;
+				backdrop-filter: blur(20px) saturate(165%);
+				-webkit-backdrop-filter: blur(20px) saturate(165%);
+				box-shadow: var(--shadow-sm), var(--inner-top);
 				transition:
-					transform 0.25s ease,
-					box-shadow 0.25s ease,
-					border-color 0.25s ease;
+					transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+					box-shadow 0.45s ease;
+			}
+			.card::before,
+			.card::after {
+				content: '';
+				position: absolute;
+				width: 22px;
+				height: 22px;
+				border: 1px solid var(--border-strong);
+				opacity: 0.6;
+				pointer-events: none;
+				z-index: 2;
+				transition: opacity 0.45s ease;
+			}
+			.card::before {
+				top: 11px;
+				left: 11px;
+				border-right: none;
+				border-bottom: none;
+				border-radius: 10px 0 0 0;
+			}
+			.card::after {
+				bottom: 11px;
+				right: 11px;
+				border-left: none;
+				border-top: none;
+				border-radius: 0 0 10px 0;
 			}
 			.card:hover {
-				transform: translateY(-4px);
-				box-shadow: var(--shadow);
-				border-color: var(--accent);
+				transform: translateY(-8px);
+				box-shadow: var(--shadow-lg);
 			}
+			.card:hover::before,
+			.card:hover::after {
+				opacity: 1;
+			}
+
 			.card .media {
+				position: relative;
 				display: block;
 				aspect-ratio: 16 / 9;
 				overflow: hidden;
-				background: var(--bg-soft);
+				background: linear-gradient(150deg, var(--accent-soft), transparent 75%);
+			}
+			.card .media::after {
+				content: '';
+				position: absolute;
+				inset: 0;
+				background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.18));
+				pointer-events: none;
 			}
 			.card .media img {
 				display: block;
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
+				transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
 			}
+			.card:hover .media img {
+				transform: scale(1.07);
+			}
+
 			.card .body {
 				display: flex;
 				flex-direction: column;
-				gap: 0.55rem;
+				gap: 0.65rem;
 				flex: 1;
-				padding: 1.2rem 1.3rem 1.4rem;
+				padding: 1.5rem 1.6rem 1.7rem;
 			}
 			.card .title {
 				margin: 0;
-				font-size: 1.15rem;
-				line-height: 1.35;
+				font-family: var(--font-display);
+				font-size: 1.24rem;
+				font-weight: 600;
+				letter-spacing: 0.05em;
+				line-height: 1.45;
 				color: var(--text);
 			}
 			.card .desc {
 				margin: 0;
 				flex: 1;
 				color: var(--text-muted);
-				font-size: 0.95rem;
-				line-height: 1.6;
+				font-size: 0.94rem;
+				line-height: 1.75;
 			}
 			.card .date {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.55rem;
 				color: var(--text-muted);
-				font-size: 0.85rem;
+				font-size: 0.83rem;
+				letter-spacing: 0.08em;
+			}
+			.card .date::before {
+				content: '';
+				width: 6px;
+				height: 6px;
+				transform: rotate(45deg);
+				background: var(--grad-gold);
+				box-shadow: 0 0 8px var(--glow-1);
 			}
 			.card a {
 				text-decoration: none;
 			}
 			.card:hover .title {
-				color: var(--accent);
+				background: var(--grad-ink);
+				-webkit-background-clip: text;
+				background-clip: text;
+				color: transparent;
+				-webkit-text-fill-color: transparent;
 			}
 			.empty {
 				color: var(--text-muted);
+				text-align: center;
 			}
 		</style>
 	</head>
@@ -112,6 +196,8 @@ const posts = (await getCollection('blog'))
 				<p>共 {posts.length} 篇</p>
 			</div>
 
+			<Ornament />
+
 			{posts.length === 0 && <p class="empty">还没有文章，去 <code>src/content/blog/</code> 写一篇吧。</p>}
 
 			<ul class="posts">
@@ -119,16 +205,16 @@ const posts = (await getCollection('blog'))
 					posts.map((post) => (
 						<li>
 							<article class="card">
-								<a class="media" href={`/blog/${post.id}/`} tabindex="-1" aria-hidden="true">
-									{post.data.heroImage && (
+								{post.data.heroImage && (
+									<a class="media" href={`/blog/${post.id}/`} tabindex="-1" aria-hidden="true">
 										<Image
 											src={post.data.heroImage}
 											alt=""
 											widths={[320, 480, 720]}
 											sizes="(max-width: 640px) 100vw, 320px"
 										/>
-									)}
-								</a>
+									</a>
+								)}
 								<div class="body">
 									<h2 class="title">
 										<a href={`/blog/${post.id}/`}>{post.data.title}</a>

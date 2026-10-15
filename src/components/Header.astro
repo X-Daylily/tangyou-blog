@@ -7,7 +7,10 @@ import SocialLinks from './SocialLinks.astro';
 <header>
 	<a href="#main-content" class="skip-link">跳到正文</a>
 	<div class="topbar">
-		<a class="brand" href="/">{SITE_TITLE}</a>
+		<a class="brand" href="/">
+			<span class="seal" aria-hidden="true"><span>糖</span><span>油</span><span>糍</span><span>粑</span></span>
+			<span class="name">{SITE_TITLE}</span>
+		</a>
 
 		<nav class="internal-links" aria-label="主导航">
 			<HeaderLink href="/">首页</HeaderLink>
@@ -28,18 +31,18 @@ import SocialLinks from './SocialLinks.astro';
 					<path
 						fill="none"
 						stroke="currentColor"
-						stroke-width="1.8"
+						stroke-width="1.7"
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"
 					/>
 				</svg>
 				<svg class="icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-					<circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8" />
+					<circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.7" />
 					<path
 						fill="none"
 						stroke="currentColor"
-						stroke-width="1.8"
+						stroke-width="1.7"
 						stroke-linecap="round"
 						d="M12 2v2.2M12 19.8V22M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2 12h2.2M19.8 12H22M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"
 					/>
@@ -65,12 +68,30 @@ import SocialLinks from './SocialLinks.astro';
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		/* 半透明毛玻璃；不支持 color-mix 的浏览器回退到纯色 */
 		background: var(--bg);
-		background: color-mix(in oklab, var(--bg) 82%, transparent);
-		backdrop-filter: saturate(180%) blur(12px);
-		-webkit-backdrop-filter: saturate(180%) blur(12px);
-		border-bottom: 1px solid var(--border);
+		background: color-mix(in srgb, var(--bg) 58%, transparent);
+		backdrop-filter: blur(22px) saturate(170%);
+		-webkit-backdrop-filter: blur(22px) saturate(170%);
+	}
+	/* 顶部一线鎏金 + 底部发丝线 */
+	header::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 2px;
+		background: linear-gradient(90deg, transparent, var(--glow-1), var(--glow-2), var(--glow-3), transparent);
+		opacity: 0.85;
+	}
+	header::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 1px;
+		background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
 	}
 
 	.topbar {
@@ -79,20 +100,32 @@ import SocialLinks from './SocialLinks.astro';
 		gap: 0.75rem;
 		max-width: var(--maxw-wide);
 		margin: 0 auto;
-		padding: 0.65rem 1.25rem;
+		padding: 0.72rem 1.25rem;
 	}
 
 	.brand {
-		font-weight: 700;
-		font-size: 1.05rem;
-		letter-spacing: -0.02em;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
 		color: var(--text);
 		text-decoration: none;
 		white-space: nowrap;
 	}
+	.brand .name {
+		font-family: var(--font-display);
+		font-size: 1.14rem;
+		font-weight: 600;
+		letter-spacing: 0.09em;
+	}
 	.brand:hover {
-		color: var(--accent);
 		text-decoration: none;
+	}
+	.brand:hover .name {
+		background: var(--grad-gold);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		-webkit-text-fill-color: transparent;
 	}
 
 	.internal-links {
@@ -112,21 +145,28 @@ import SocialLinks from './SocialLinks.astro';
 	.theme-toggle {
 		display: grid;
 		place-items: center;
-		width: 36px;
-		height: 36px;
+		width: 38px;
+		height: 38px;
 		padding: 0;
-		border: 1px solid var(--border);
+		border: 1px solid transparent;
 		border-radius: 999px;
-		background: var(--surface);
 		color: var(--text-muted);
 		cursor: pointer;
+		background:
+			linear-gradient(var(--surface), var(--surface)) padding-box,
+			linear-gradient(135deg, var(--glow-1), var(--glow-3)) border-box;
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		box-shadow: var(--inner-top);
 		transition:
-			color 0.2s ease,
-			border-color 0.2s ease;
+			color 0.25s ease,
+			box-shadow 0.25s ease,
+			transform 0.25s ease;
 	}
 	.theme-toggle:hover {
 		color: var(--accent);
-		border-color: var(--accent);
+		box-shadow: var(--glow);
+		transform: rotate(-12deg);
 	}
 
 	.theme-toggle .icon-sun {
@@ -144,14 +184,21 @@ import SocialLinks from './SocialLinks.astro';
 			padding: 0.55rem 0.9rem;
 			gap: 0.4rem;
 		}
-		.brand {
-			font-size: 0.98rem;
+		.brand .name {
+			font-size: 1rem;
+			letter-spacing: 0.05em;
 		}
 		.internal-links {
 			gap: 0;
 		}
-		/* 社交图标在窄屏隐藏，页脚里仍然保留 */
 		.actions :global(.social-links) {
+			display: none;
+		}
+	}
+
+	/* 窄屏只保留印章，给导航让位 */
+	@media (max-width: 540px) {
+		.brand .name {
 			display: none;
 		}
 	}

@@ -1,0 +1,75 @@
+---
+interface Props {
+	/** 中间显示的文字；不传则显示鎏金星芒 */
+	text?: string;
+}
+
+const { text } = Astro.props;
+---
+
+<div class="ornament" aria-hidden="true">
+	<span class="line"></span>
+	{
+		text ? (
+			<span class="ink">{text}</span>
+		) : (
+			<svg class="mark" viewBox="0 0 24 24" width="20" height="20">
+				<path d="M12 1.4l1.95 7.05L21 10.4l-7.05 1.95L12 19.4l-1.95-7.05L3 10.4l7.05-1.95z" />
+				<path d="M19.6 2.1l.5 1.85 1.85.5-1.85.5-.5 1.85-.5-1.85-1.85-.5 1.85-.5z" />
+				<path d="M5.1 16.4l.4 1.5 1.5.4-1.5.4-.4 1.5-.4-1.5-1.5-.4 1.5-.4z" />
+			</svg>
+		)
+	}
+	<span class="line"></span>
+</div>
+
+<style>
+	.ornament {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.9rem;
+		margin: 2.4rem 0;
+	}
+	.line {
+		position: relative;
+		height: 1px;
+		width: min(190px, 26vw);
+		background: linear-gradient(90deg, transparent, var(--border-strong), var(--glow-1));
+	}
+	.line:last-child {
+		background: linear-gradient(90deg, var(--glow-1), var(--border-strong), transparent);
+	}
+	.line::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		width: 5px;
+		height: 5px;
+		border-radius: 50%;
+		transform: translateY(-50%) rotate(45deg);
+		background: var(--grad-gold);
+		box-shadow: 0 0 10px var(--glow-1);
+	}
+	.line:first-child::after {
+		right: -0.45rem;
+	}
+	.line:last-child::after {
+		left: -0.45rem;
+	}
+	.mark {
+		fill: var(--accent);
+		filter: drop-shadow(0 0 8px var(--glow-1));
+	}
+	.ink {
+		font-family: var(--font-display);
+		font-size: 0.95rem;
+		letter-spacing: 0.4em;
+		text-indent: 0.4em;
+		background: var(--grad-gold);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+		-webkit-text-fill-color: transparent;
+	}
+</style>
