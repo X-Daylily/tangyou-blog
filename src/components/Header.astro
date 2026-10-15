@@ -1,6 +1,7 @@
 ---
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
+import Logo from './Logo.astro';
 import SocialLinks from './SocialLinks.astro';
 ---
 
@@ -8,7 +9,7 @@ import SocialLinks from './SocialLinks.astro';
 	<a href="#main-content" class="skip-link">跳到正文</a>
 	<div class="topbar">
 		<a class="brand" href="/">
-			<span class="seal" aria-hidden="true"><span>糖</span><span>油</span><span>糍</span><span>粑</span></span>
+			<Logo size={40} />
 			<span class="name">{SITE_TITLE}</span>
 		</a>
 
@@ -121,11 +122,14 @@ import SocialLinks from './SocialLinks.astro';
 		text-decoration: none;
 	}
 	.brand:hover .name {
-		background: var(--grad-gold);
+		background: var(--grad-ink);
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
 		-webkit-text-fill-color: transparent;
+	}
+	.brand:hover :global(.logo) {
+		transform: scale(1.08) rotate(-4deg);
 	}
 
 	.internal-links {

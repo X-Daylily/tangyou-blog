@@ -529,28 +529,6 @@ th {
 	box-shadow: var(--shadow), var(--inner-top);
 }
 
-/* 印章 */
-.seal {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	place-items: center;
-	gap: 0;
-	width: 2rem;
-	height: 2rem;
-	padding: 2px;
-	border-radius: 6px;
-	background: linear-gradient(150deg, var(--seal), color-mix(in srgb, var(--seal) 72%, #000));
-	color: var(--seal-ink);
-	font-family: var(--font-display);
-	font-size: 0.62rem;
-	font-weight: 700;
-	line-height: 1;
-	box-shadow:
-		0 3px 12px color-mix(in srgb, var(--seal) 45%, transparent),
-		inset 0 0 0 1px rgba(255, 255, 255, 0.32);
-	user-select: none;
-}
-
 /* 鎏金发光按钮 + 扫光 */
 .btn {
 	position: relative;
