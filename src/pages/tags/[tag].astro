@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+
+export async function getStaticPaths() {
+	const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
+	const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+
+	return tags.map((tag) => ({
+		params: { tag },
+		props: {
+			posts: posts
+				.filter((post) => post.data.tags.includes(tag))
+				.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+		},
+	}));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+---
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`标签：${tag}`} description={`标签「${tag}」下的全部文章`} />
+		<style>
+			main {
+				max-width: var(--maxw);
+				padding-top: 2.5rem;
+			}
+			.list {
+				list-style: none;
+				margin: 1.5rem 0 0;
+				padding: 0;
+			}
+			.list a {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 1rem;
+				padding: 1rem 0.2rem;
+				border-bottom: 1px solid var(--border);
+				color: var(--text);
+				text-decoration: none;
+			}
+			.list a:hover {
+				color: var(--accent);
+				text-decoration: none;
+			}
+			.list .t {
+				font-weight: 600;
+			}
+			.list .d {
+				color: var(--text-muted);
+				font-size: 0.9rem;
+				white-space: nowrap;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main id="main-content">
+			<h1>标签：{tag}</h1>
+			<p><a href="/tags/">← 全部标签</a></p>
+			<ul class="list">
+				{
+					posts.map((post) => (
+						<li>
+							<a href={`/blog/${post.id}/`}>
+								<span class="t">{post.data.title}</span>
+								<span class="d">
+									<FormattedDate date={post.data.pubDate} />
+								</span>
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</main>
+		<Footer />
+	</body>
+</html>

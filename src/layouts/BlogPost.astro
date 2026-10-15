@@ -1,81 +1,270 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
+import type { MarkdownHeading } from 'astro';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import { SITE_AUTHOR, SITE_TITLE } from '../consts';
 
-type Props = CollectionEntry<'blog'>['data'];
+interface PostLink {
+	title: string;
+	id: string;
+}
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: MarkdownHeading[];
+	readingTime?: string;
+	prev?: PostLink | null;
+	next?: PostLink | null;
+};
+
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	tags = [],
+	headings = [],
+	readingTime,
+	prev,
+	next,
+	draft,
+} = Astro.props;
+
+// 目录只取二、三级标题
+const toc = headings.filter((h) => h.depth > 1 && h.depth <= 3);
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: title,
+	description,
+	image: heroImage ? new URL(heroImage.src, Astro.site).href : undefined,
+	datePublished: pubDate.toISOString(),
+	dateModified: (updatedDate ?? pubDate).toISOString(),
+	author: { '@type': 'Person', name: SITE_AUTHOR },
+	publisher: { '@type': 'Organization', name: SITE_TITLE },
+	mainEntityOfPage: canonical.href,
+	keywords: tags.join(','),
+};
 ---
-
-<html lang="en">
+<!doctype html>
+<html lang="zh-CN">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead
+			title={title}
+			description={description}
+			image={heroImage}
+			type="article"
+			noindex={import.meta.env.PROD && draft}
+		/>
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 		<style>
 			main {
-				width: calc(100% - 2em);
 				max-width: 100%;
-				margin: 0;
+				padding: 0;
 			}
-			.hero-image {
+			.hero {
+				max-width: var(--maxw-wide);
+				margin: 2rem auto 0;
+				padding: 0 1.25rem;
+			}
+			.hero img {
 				width: 100%;
-			}
-			.hero-image img {
+				height: auto;
 				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+				border-radius: var(--radius-lg);
+				box-shadow: var(--shadow);
 			}
 			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+				max-width: var(--maxw);
+				margin: 0 auto;
+				padding: 0 1.25rem 3rem;
 			}
 			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
+				margin: 2.5rem 0 1.5rem;
 				text-align: center;
-				line-height: 1;
 			}
 			.title h1 {
-				margin: 0 0 0.5em 0;
+				margin: 0 0 0.6rem;
 			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
+			.meta {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				align-items: center;
+				gap: 0.5rem 0.8rem;
+				color: var(--text-muted);
+				font-size: 0.9rem;
 			}
-			.last-updated-on {
-				font-style: italic;
+			.meta .sep {
+				color: var(--border);
+			}
+			.tags {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 0.4rem;
+				list-style: none;
+				margin: 1rem 0 0;
+				padding: 0;
+			}
+			.tags a {
+				display: inline-block;
+				padding: 0.2em 0.7em;
+				border-radius: 999px;
+				background: var(--accent-soft);
+				color: var(--accent);
+				font-size: 0.82rem;
+				text-decoration: none;
+			}
+			.tags a:hover {
+				background: var(--accent);
+				color: #fff;
+			}
+			.toc {
+				margin: 2rem 0;
+				padding: 1.1rem 1.4rem;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+			}
+			.toc h2 {
+				margin: 0 0 0.6rem;
+				font-size: 1rem;
+				color: var(--text-muted);
+				letter-spacing: 0.05em;
+			}
+			.toc ul {
+				margin: 0;
+				padding-left: 1.1em;
+			}
+			.toc li {
+				margin: 0.25em 0;
+			}
+			.toc .toc-depth-3 {
+				margin-left: 1em;
+				font-size: 0.95rem;
+			}
+			.post-nav {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+				margin-top: 3.5rem;
+				padding-top: 1.8rem;
+				border-top: 1px solid var(--border);
+			}
+			.post-nav a {
+				display: flex;
+				flex-direction: column;
+				gap: 0.25rem;
+				padding: 1rem 1.1rem;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				text-decoration: none;
+				transition:
+					border-color 0.2s ease,
+					box-shadow 0.2s ease;
+			}
+			.post-nav a:hover {
+				border-color: var(--accent);
+				box-shadow: var(--shadow-sm);
+				text-decoration: none;
+			}
+			.post-nav .label {
+				font-size: 0.78rem;
+				color: var(--text-muted);
+			}
+			.post-nav .next {
+				text-align: right;
+			}
+			@media (max-width: 640px) {
+				.post-nav {
+					grid-template-columns: 1fr;
+				}
 			}
 		</style>
 	</head>
 
 	<body>
 		<Header />
-		<main>
+		<main id="main-content">
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
-				</div>
+				{heroImage && (
+					<div class="hero">
+						<Image
+							src={heroImage}
+							alt={title}
+							widths={[480, 768, 1020]}
+							sizes="(max-width: 1100px) 100vw, 1020px"
+							priority
+						/>
+					</div>
+				)}
+
 				<div class="prose">
-					<div class="title">
-						<div class="date">
+					<header class="title">
+						<h1>{title}</h1>
+						<div class="meta">
 							<FormattedDate date={pubDate} />
+							{readingTime && <span class="sep">·</span>}
+							{readingTime && <span>约 {readingTime}</span>}
+							{updatedDate && <span class="sep">·</span>}
 							{updatedDate && (
-								<div class="last-updated-on">
-									Last updated on <FormattedDate date={updatedDate} />
-								</div>
+								<span>
+									最后更新于 <FormattedDate date={updatedDate} />
+								</span>
 							)}
 						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
+						{tags.length > 0 && (
+							<ul class="tags">
+								{tags.map((tag) => (
+									<li>
+										<a href={`/tags/${tag}/`}>#{tag}</a>
+									</li>
+								))}
+							</ul>
+						)}
+					</header>
+
+					{toc.length > 0 && (
+						<nav class="toc" aria-label="目录">
+							<h2>目录</h2>
+							<ul>
+								{toc.map((h) => (
+									<li class={`toc-depth-${h.depth}`}>
+										<a href={`#${h.slug}`}>{h.text}</a>
+									</li>
+								))}
+							</ul>
+						</nav>
+					)}
+
 					<slot />
+
+					{(prev || next) && (
+						<nav class="post-nav" aria-label="上一篇 / 下一篇">
+							{prev ? (
+								<a class="prev" href={`/blog/${prev.id}/`}>
+									<span class="label">← 上一篇</span>
+									<span>{prev.title}</span>
+								</a>
+							) : (
+								<span />
+							)}
+							{next && (
+								<a class="next" href={`/blog/${next.id}/`}>
+									<span class="label">下一篇 →</span>
+									<span>{next.title}</span>
+								</a>
+							)}
+						</nav>
+					)}
 				</div>
 			</article>
 		</main>
