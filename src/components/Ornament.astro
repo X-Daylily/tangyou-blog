@@ -60,6 +60,37 @@ const { text } = Astro.props;
 	.mark {
 		fill: var(--accent);
 		filter: drop-shadow(0 0 8px var(--glow-1));
+		transform-box: fill-box;
+		transform-origin: 50% 50%;
+		animation: mark-twinkle 4.2s ease-in-out infinite;
+	}
+	@keyframes mark-twinkle {
+		0%,
+		100% {
+			opacity: 0.72;
+			transform: scale(0.94) rotate(0deg);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1.06) rotate(18deg);
+		}
+	}
+	.line::after {
+		animation: dot-pulse 3.4s ease-in-out infinite;
+	}
+	.line:last-child::after {
+		animation-delay: 0.5s;
+	}
+	@keyframes dot-pulse {
+		0%,
+		100% {
+			opacity: 0.6;
+			box-shadow: 0 0 6px var(--glow-1);
+		}
+		50% {
+			opacity: 1;
+			box-shadow: 0 0 16px var(--glow-1);
+		}
 	}
 	.ink {
 		font-family: var(--font-display);

@@ -2,6 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
+import Logo from '../components/Logo.astro';
 import Ornament from '../components/Ornament.astro';
 import { SITE_AUTHOR } from '../consts';
 ---
@@ -16,6 +17,13 @@ import { SITE_AUTHOR } from '../consts';
 			}
 			.head {
 				text-align: center;
+			}
+			.avatar {
+				display: inline-flex;
+				margin-bottom: 0.7rem;
+			}
+			.avatar :global(.logo) {
+				filter: drop-shadow(0 10px 24px rgba(198, 152, 78, 0.32));
 			}
 			h1 {
 				margin-bottom: 0.4rem;
@@ -69,6 +77,37 @@ import { SITE_AUTHOR } from '../consts';
 			.card p:last-child {
 				margin-bottom: 0;
 			}
+			.links {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.6rem;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.links li {
+				margin: 0;
+			}
+			.links a {
+				display: inline-block;
+				padding: 0.35em 1.05em;
+				border-radius: 999px;
+				border: 1px solid var(--border);
+				background: var(--surface);
+				font-size: 0.92rem;
+				letter-spacing: 0.06em;
+				text-decoration: none;
+				transition:
+					border-color 0.25s ease,
+					color 0.25s ease,
+					box-shadow 0.25s ease;
+			}
+			.links a:hover {
+				border-color: var(--accent);
+				color: var(--accent);
+				box-shadow: var(--shadow-sm);
+				text-decoration: none;
+			}
 			@media (max-width: 720px) {
 				.card {
 					padding: 1.8rem 1.4rem;
@@ -80,6 +119,7 @@ import { SITE_AUTHOR } from '../consts';
 		<Header />
 		<main id="main-content">
 			<div class="head">
+				<span class="avatar"><Logo size={76} /></span>
 				<h1>关于</h1>
 				<p class="subtitle">你好，我是{SITE_AUTHOR}。</p>
 			</div>
@@ -87,14 +127,22 @@ import { SITE_AUTHOR } from '../consts';
 			<Ornament />
 
 			<div class="card glass rise">
-				<h2>我是谁</h2>
-				<p>在这里写你是谁、现在在做什么、对什么感兴趣。</p>
+				<h2>关于我</h2>
+				<p>一个还在学习和折腾的人。喜欢把遇到的问题、走过的弯路记下来，方便以后的自己，也希望对路过的你有用。</p>
 
 				<h2>为什么写博客</h2>
-				<p>记录学习过程、整理项目复盘、坚持输出。</p>
+				<p>记录学习过程、整理项目复盘、坚持输出。写作会逼着我把一件事想清楚，而公开写作会让这件事更有分量。</p>
+
+				<h2>关于这个博客</h2>
+				<p>用 Astro 构建，部署在 Cloudflare Pages，源码放在 GitHub。没有评论区和广告，只留下文字。</p>
 
 				<h2>联系我</h2>
-				<p>邮箱：<a href="mailto:you@example.com">you@example.com</a></p>
+				<ul class="links">
+					<li><a href="https://github.com/X-Daylily" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+					<li><a href="/rss.xml">RSS 订阅</a></li>
+					<li><a href="/blog/">全部文章</a></li>
+					<li><a href="/tags/">按标签浏览</a></li>
+				</ul>
 			</div>
 		</main>
 		<Footer />

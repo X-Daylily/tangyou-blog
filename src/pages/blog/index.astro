@@ -37,7 +37,9 @@ const posts = (await getCollection('blog'))
 
 			.posts {
 				display: grid;
-				grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+				/* auto-fit：文章少时居中，不会缩在左边 */
+				grid-template-columns: repeat(auto-fit, minmax(300px, 360px));
+				justify-content: center;
 				gap: 1.9rem;
 				list-style: none;
 				margin: 0;
@@ -69,8 +71,9 @@ const posts = (await getCollection('blog'))
 				backdrop-filter: blur(20px) saturate(165%);
 				-webkit-backdrop-filter: blur(20px) saturate(165%);
 				box-shadow: var(--shadow-sm), var(--inner-top);
+				transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
 				transition:
-					transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+					transform 0.25s ease-out,
 					box-shadow 0.45s ease;
 			}
 			.card::before,
@@ -100,7 +103,8 @@ const posts = (await getCollection('blog'))
 				border-radius: 0 0 10px 0;
 			}
 			.card:hover {
-				transform: translateY(-8px);
+				transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+					translateY(-8px);
 				box-shadow: var(--shadow-lg);
 			}
 			.card:hover::before,
@@ -156,6 +160,35 @@ const posts = (await getCollection('blog'))
 				font-size: 0.94rem;
 				line-height: 1.75;
 			}
+			.card .card-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4rem;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.card .card-tags li {
+				margin: 0;
+			}
+			.card .card-tags a {
+				display: inline-block;
+				padding: 0.12em 0.7em;
+				border-radius: 999px;
+				background: var(--accent-soft);
+				color: var(--accent);
+				font-size: 0.76rem;
+				letter-spacing: 0.06em;
+				text-decoration: none;
+				transition:
+					background-color 0.25s ease,
+					color 0.25s ease;
+			}
+			.card .card-tags a:hover {
+				background: var(--accent);
+				color: var(--accent-contrast);
+				text-decoration: none;
+			}
 			.card .date {
 				display: inline-flex;
 				align-items: center;
@@ -191,20 +224,20 @@ const posts = (await getCollection('blog'))
 	<body>
 		<Header />
 		<main id="main-content">
-			<div class="page-title">
+			<div class="page-title" data-reveal>
 				<h1>文章</h1>
 				<p>共 {posts.length} 篇</p>
 			</div>
 
-			<Ornament />
+			<div data-reveal><Ornament /></div>
 
 			{posts.length === 0 && <p class="empty">还没有文章，去 <code>src/content/blog/</code> 写一篇吧。</p>}
 
 			<ul class="posts">
 				{
-					posts.map((post) => (
-						<li>
-							<article class="card">
+					posts.map((post, i) => (
+						<li data-reveal style={`--rd:${(i * 0.08).toFixed(2)}s`}>
+							<article class="card" data-tilt>
 								{post.data.heroImage && (
 									<a class="media" href={`/blog/${post.id}/`} tabindex="-1" aria-hidden="true">
 										<Image
@@ -220,6 +253,15 @@ const posts = (await getCollection('blog'))
 										<a href={`/blog/${post.id}/`}>{post.data.title}</a>
 									</h2>
 									<p class="desc">{post.data.description}</p>
+									{post.data.tags.length > 0 && (
+										<ul class="card-tags">
+											{post.data.tags.map((tag) => (
+												<li>
+													<a href={`/tags/${tag}/`}>#{tag}</a>
+												</li>
+											))}
+										</ul>
+									)}
 									<span class="date">
 										<FormattedDate date={post.data.pubDate} />
 									</span>
@@ -233,3 +275,30 @@ const posts = (await getCollection('blog'))
 		<Footer />
 	</body>
 </html>
+
+<script>
+	// 卡片跟随鼠标轻微 3D 倾斜
+	const cards = [...document.querySelectorAll<HTMLElement>('[data-tilt]')];
+	const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	if (fine && !reduce) {
+		for (const card of cards) {
+			card.addEventListener(
+				'pointermove',
+				(e) => {
+					const r = card.getBoundingClientRect();
+					const px = (e.clientX - r.left) / r.width - 0.5;
+					const py = (e.clientY - r.top) / r.height - 0.5;
+					card.style.setProperty('--ry', `${(px * 11).toFixed(2)}deg`);
+					card.style.setProperty('--rx', `${(-py * 8).toFixed(2)}deg`);
+				},
+				{ passive: true }
+			);
+			card.addEventListener('pointerleave', () => {
+				card.style.removeProperty('--rx');
+				card.style.removeProperty('--ry');
+			});
+		}
+	}
+</script>

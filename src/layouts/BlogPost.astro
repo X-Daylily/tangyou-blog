@@ -59,7 +59,10 @@ const jsonLd = {
 			title={title}
 			description={description}
 			image={heroImage}
+			imageAlt={title}
 			type="article"
+			publishedTime={pubDate}
+			modifiedTime={updatedDate ?? pubDate}
 			noindex={import.meta.env.PROD && draft}
 		/>
 		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
@@ -95,6 +98,52 @@ const jsonLd = {
 
 			.title {
 				text-align: center;
+			}
+
+			/* 正文收窄到约 42rem，中文行宽更舒服 */
+			.prose {
+				max-width: 42rem;
+				margin: 0 auto;
+			}
+			.prose :global(pre) {
+				position: relative;
+			}
+			.prose :global(.copy-code) {
+				position: absolute;
+				top: 0.55rem;
+				right: 0.55rem;
+				padding: 0.22em 0.75em;
+				border: 1px solid rgba(255, 255, 255, 0.18);
+				border-radius: 999px;
+				background: rgba(255, 255, 255, 0.08);
+				color: #e9dfcd;
+				font-family: var(--font-sans);
+				font-size: 0.72rem;
+				letter-spacing: 0.08em;
+				cursor: pointer;
+				opacity: 0;
+				transition:
+					opacity 0.25s ease,
+					background-color 0.25s ease,
+					color 0.25s ease;
+			}
+			.prose :global(pre:hover .copy-code),
+			.prose :global(.copy-code:focus-visible),
+			.prose :global(.copy-code.is-done) {
+				opacity: 1;
+			}
+			.prose :global(.copy-code:hover) {
+				background: rgba(255, 255, 255, 0.18);
+				color: #fff8ec;
+			}
+			.prose :global(.copy-code.is-done) {
+				border-color: var(--glow-1);
+				color: var(--glow-1);
+			}
+			@media (hover: none) {
+				.prose :global(.copy-code) {
+					opacity: 0.8;
+				}
 			}
 			.title h1 {
 				margin: 0 0 1rem;
@@ -147,7 +196,8 @@ const jsonLd = {
 			}
 
 			.toc {
-				margin: 0 0 2.8rem;
+				max-width: 42rem;
+				margin: 0 auto 2.8rem;
 				padding: 1.4rem 1.7rem;
 				border-radius: var(--radius);
 				border: 1px solid var(--border);
@@ -171,6 +221,23 @@ const jsonLd = {
 			.toc .toc-depth-3 {
 				margin-left: 1em;
 				font-size: 0.95rem;
+			}
+			.toc a {
+				transition:
+					color 0.25s ease,
+					font-weight 0.25s ease;
+			}
+			.toc a.active {
+				color: var(--accent);
+				font-weight: 700;
+			}
+			.toc a.active::after {
+				content: '◆';
+				margin-left: 0.45em;
+				font-size: 0.6em;
+				vertical-align: 0.25em;
+				color: var(--accent);
+				opacity: 0.85;
 			}
 
 			.post-nav {
@@ -292,7 +359,7 @@ const jsonLd = {
 					</div>
 
 					{(prev || next) && (
-						<nav class="post-nav" aria-label="上一篇 / 下一篇">
+						<nav class="post-nav" aria-label="上一篇 / 下一篇" data-reveal>
 							{prev ? (
 								<a class="prev" href={`/blog/${prev.id}/`}>
 									<span class="label">← 上一篇</span>
@@ -315,3 +382,79 @@ const jsonLd = {
 		<Footer />
 	</body>
 </html>
+
+<script>
+	// 目录高亮跟随阅读位置
+	const toc = document.querySelector('.toc');
+	if (toc) {
+		const map = new Map<Element, HTMLAnchorElement>();
+		for (const a of toc.querySelectorAll<HTMLAnchorElement>('a')) {
+			const id = decodeURIComponent((a.getAttribute('href') ?? '').slice(1));
+			const el = id ? document.getElementById(id) : null;
+			if (el) map.set(el, a);
+		}
+
+		if (map.size > 0 && 'IntersectionObserver' in window) {
+			let active: HTMLAnchorElement | null = null;
+			const setActive = (link: HTMLAnchorElement | undefined) => {
+				if (!link || link === active) return;
+				active?.classList.remove('active');
+				active = link;
+				active.classList.add('active');
+			};
+
+			const io = new IntersectionObserver(
+				(entries) => {
+					const hit = entries
+						.filter((e) => e.isIntersecting)
+						.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+					if (hit) setActive(map.get(hit.target));
+				},
+				{ rootMargin: '-14% 0px -74% 0px', threshold: 0 }
+			);
+			map.forEach((_link, el) => io.observe(el));
+		}
+	}
+</script>
+
+<script>
+	// 代码块「复制」按钮
+	const blocks = document.querySelectorAll<HTMLElement>('.prose pre');
+	for (const pre of blocks) {
+		const code = pre.querySelector('code');
+		if (!code) continue;
+
+		const button = document.createElement('button');
+		button.type = 'button';
+		button.className = 'copy-code';
+		button.textContent = '复制';
+		button.setAttribute('aria-label', '复制代码');
+
+		const copy = async () => {
+			const text = code.textContent ?? '';
+			try {
+				await navigator.clipboard.writeText(text);
+			} catch {
+				// 非 HTTPS 环境（如局域网预览）退回 execCommand
+				const area = document.createElement('textarea');
+				area.value = text;
+				area.setAttribute('readonly', '');
+				area.style.position = 'fixed';
+				area.style.opacity = '0';
+				document.body.appendChild(area);
+				area.select();
+				document.execCommand('copy');
+				area.remove();
+			}
+			button.textContent = '已复制 ✓';
+			button.classList.add('is-done');
+			setTimeout(() => {
+				button.textContent = '复制';
+				button.classList.remove('is-done');
+			}, 1600);
+		};
+
+		button.addEventListener('click', copy);
+		pre.appendChild(button);
+	}
+</script>

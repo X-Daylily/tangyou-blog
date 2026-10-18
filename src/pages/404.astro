@@ -1,0 +1,70 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import Ornament from '../components/Ornament.astro';
+import { SITE_TITLE } from '../consts';
+---
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`页面走丢了 · ${SITE_TITLE}`} description="这个页面不存在，可能已经被移动或删除。" noindex />
+		<style>
+			main {
+				max-width: 760px;
+				padding-top: 4rem;
+				text-align: center;
+			}
+			.code {
+				margin: 0;
+				font-family: var(--font-display);
+				font-size: clamp(5rem, 16vw, 9rem);
+				font-weight: 600;
+				line-height: 0.95;
+				letter-spacing: 0.08em;
+				background: var(--grad-ink);
+				-webkit-background-clip: text;
+				background-clip: text;
+				color: transparent;
+				-webkit-text-fill-color: transparent;
+			}
+			h1 {
+				margin: 1.2rem 0 0.6rem;
+				font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+			}
+			.lead {
+				max-width: 26em;
+				margin: 0 auto;
+				color: var(--text-muted);
+			}
+			.actions {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 0.9rem;
+				margin-top: 2.2rem;
+			}
+			.hint {
+				margin-top: 2.8rem;
+				font-size: 0.85rem;
+				letter-spacing: 0.12em;
+				color: var(--text-muted);
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main id="main-content">
+			<p class="code" aria-hidden="true">404</p>
+			<h1>这一页走丢了</h1>
+			<p class="lead">链接可能已经过期，或者地址敲错了一个字。不如回到首页，或者去文章列表里翻翻。</p>
+			<div class="actions">
+				<a class="btn" href="/">回到首页</a>
+				<a class="btn ghost" href="/blog/">浏览文章</a>
+			</div>
+			<Ornament />
+			<p class="hint">如果你确定这个地址应该存在，欢迎通过 GitHub 告诉我。</p>
+		</main>
+		<Footer />
+	</body>
+</html>

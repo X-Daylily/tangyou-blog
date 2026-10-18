@@ -4,6 +4,7 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
+import Ornament from '../../components/Ornament.astro';
 
 export async function getStaticPaths() {
 	const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
@@ -31,9 +32,28 @@ const { posts } = Astro.props;
 				max-width: var(--maxw);
 				padding-top: 2.5rem;
 			}
+			.page-title {
+				text-align: center;
+			}
+			.page-title h1 {
+				margin: 0;
+				letter-spacing: 0.12em;
+			}
+			.page-title p {
+				margin: 0.5rem 0 0;
+				color: var(--text-muted);
+				font-size: 0.85rem;
+				letter-spacing: 0.28em;
+			}
+			.back {
+				display: inline-block;
+				margin-top: 0.9rem;
+				font-size: 0.86rem;
+				letter-spacing: 0.08em;
+			}
 			.list {
 				list-style: none;
-				margin: 1.5rem 0 0;
+				margin: 0;
 				padding: 0;
 			}
 			.list a {
@@ -41,21 +61,43 @@ const { posts } = Astro.props;
 				align-items: baseline;
 				justify-content: space-between;
 				gap: 1rem;
-				padding: 1rem 0.2rem;
+				padding: 1.1rem 0.3rem 1.1rem 1.5rem;
 				border-bottom: 1px solid var(--border);
 				color: var(--text);
 				text-decoration: none;
+				position: relative;
+				transition:
+					padding-left 0.35s ease,
+					color 0.3s ease;
+			}
+			.list a::before {
+				content: '';
+				position: absolute;
+				left: 0.2rem;
+				top: 50%;
+				transform: translateY(-50%) rotate(45deg);
+				width: 6px;
+				height: 6px;
+				background: var(--grad-gold);
+				opacity: 0.55;
+				transition: opacity 0.35s ease;
 			}
 			.list a:hover {
+				padding-left: 2rem;
 				color: var(--accent);
 				text-decoration: none;
 			}
+			.list a:hover::before {
+				opacity: 1;
+			}
 			.list .t {
+				font-family: var(--font-display);
 				font-weight: 600;
+				letter-spacing: 0.03em;
 			}
 			.list .d {
 				color: var(--text-muted);
-				font-size: 0.9rem;
+				font-size: 0.85rem;
 				white-space: nowrap;
 			}
 		</style>
@@ -63,8 +105,14 @@ const { posts } = Astro.props;
 	<body>
 		<Header />
 		<main id="main-content">
-			<h1>标签：{tag}</h1>
-			<p><a href="/tags/">← 全部标签</a></p>
+			<div class="page-title">
+				<h1>标签：{tag}</h1>
+				<p>共 {posts.length} 篇</p>
+				<a class="back" href="/tags/">← 全部标签</a>
+			</div>
+
+			<Ornament />
+
 			<ul class="list">
 				{
 					posts.map((post) => (

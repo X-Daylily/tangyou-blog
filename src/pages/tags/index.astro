@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
+import Ornament from '../../components/Ornament.astro';
 
 const posts = await getCollection('blog');
 const counts = new Map<string, number>();
@@ -22,13 +23,24 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]);
 				max-width: var(--maxw);
 				padding-top: 2.5rem;
 			}
-			h1 {
-				margin-bottom: 1.5rem;
+			.page-title {
+				text-align: center;
+			}
+			.page-title h1 {
+				margin: 0;
+				letter-spacing: 0.12em;
+			}
+			.page-title p {
+				margin: 0.5rem 0 0;
+				color: var(--text-muted);
+				font-size: 0.85rem;
+				letter-spacing: 0.28em;
 			}
 			.tags {
 				display: flex;
 				flex-wrap: wrap;
-				gap: 0.6rem;
+				justify-content: center;
+				gap: 0.7rem;
 				list-style: none;
 				margin: 0;
 				padding: 0;
@@ -39,35 +51,51 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]);
 			.tags a {
 				display: inline-flex;
 				align-items: center;
-				gap: 0.4rem;
-				padding: 0.45em 1em;
+				gap: 0.5rem;
+				padding: 0.5em 1.05em;
 				border-radius: 999px;
 				background: var(--surface);
 				border: 1px solid var(--border);
 				color: var(--text);
 				text-decoration: none;
 				transition:
-					border-color 0.2s ease,
-					color 0.2s ease;
+					border-color 0.25s ease,
+					color 0.25s ease,
+					box-shadow 0.25s ease;
 			}
 			.tags a:hover {
 				border-color: var(--accent);
 				color: var(--accent);
+				box-shadow: var(--shadow-sm);
 				text-decoration: none;
 			}
 			.tags .n {
-				color: var(--text-muted);
-				font-size: 0.85em;
+				display: inline-grid;
+				place-items: center;
+				min-width: 1.6em;
+				height: 1.6em;
+				padding: 0 0.35em;
+				border-radius: 999px;
+				background: var(--accent-soft);
+				color: var(--accent);
+				font-size: 0.76rem;
 			}
 			.empty {
 				color: var(--text-muted);
+				text-align: center;
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
 		<main id="main-content">
-			<h1>标签</h1>
+			<div class="page-title">
+				<h1>标签</h1>
+				<p>共 {tags.length} 个</p>
+			</div>
+
+			<Ornament />
+
 			{
 				tags.length === 0 ? (
 					<p class="empty">还没有标签。在文章 frontmatter 里加 <code>tags: ['示例']</code> 即可。</p>

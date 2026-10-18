@@ -13,6 +13,12 @@ const today = new Date();
 			<div class="meta">
 				<p class="brand">{SITE_TITLE}</p>
 				<p class="copy">© {today.getFullYear()} {SITE_AUTHOR}</p>
+				<nav class="foot-nav" aria-label="页脚导航">
+					<a href="/blog/">文章</a>
+					<a href="/tags/">标签</a>
+					<a href="/about/">关于</a>
+					<a href="/rss.xml">RSS</a>
+				</nav>
 			</div>
 			<SocialLinks />
 		</div>
@@ -63,5 +69,19 @@ const today = new Date();
 		font-size: 0.86rem;
 		color: var(--text-muted);
 		letter-spacing: 0.06em;
+	}
+	.foot-nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem 1rem;
+		margin-top: 0.45rem;
+		font-size: 0.8rem;
+		letter-spacing: 0.12em;
+	}
+	.foot-nav a {
+		color: var(--text-muted);
+	}
+	.foot-nav a:hover {
+		color: var(--accent);
 	}
 </style>
