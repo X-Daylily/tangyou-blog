@@ -1,0 +1,328 @@
+---
+/**
+ * 漂浮的美食：背景装饰层，轻轻浮动，不参与交互。
+ * 位置/时长用正弦伪随机生成，保证每次构建结果一致（不会因部署而跳位）。
+ */
+type Food = 'ciba' | 'tanghulu' | 'baozi' | 'dumpling' | 'milktea' | 'mooncake';
+
+const ICONS: Record<Food, string> = {
+	// 糖油糍粑：糯米糕 + 垂坠糖油 + 芝麻 + 热气
+	ciba: `<svg viewBox="0 0 32 32" fill="none"><path d="M4.6 19.1c0-4.4 5.1-7.5 11.4-7.5s11.4 3.1 11.4 7.5c0 4.5-5.1 7.6-11.4 7.6S4.6 23.6 4.6 19.1Z" fill="currentColor" fill-opacity=".09"/><path d="M4.8 17.2c1.6 2.2 3.2 2.2 4.8 0 1.6 2.2 3.2 2.2 4.8 0 1.6 2.2 3.2 2.2 4.8 0 1.6 2.2 3.2 2.2 4.8 0 1.6 2.2 3.2 2.2 4.8 0"/><path d="M10.6 9.6c-.8-1.3.1-2.2.8-3.1M16 8.9c-.8-1.4.1-2.3.8-3.2M21.4 9.6c-.8-1.3.1-2.2.8-3.1"/><circle cx="12.9" cy="19.1" r=".62" fill="currentColor" stroke="none"/><circle cx="16.4" cy="20.4" r=".55" fill="currentColor" stroke="none"/><circle cx="19.6" cy="18.9" r=".5" fill="currentColor" stroke="none"/><circle cx="14.8" cy="22.2" r=".45" fill="currentColor" stroke="none"/></svg>`,
+	// 糖葫芦：四颗山楂 + 竹签 + 糖壳高光
+	tanghulu: `<svg viewBox="0 0 32 32" fill="none"><path d="M16 29.2V8.6"/><circle cx="16" cy="6.2" r="3.2" fill="currentColor" fill-opacity=".09"/><circle cx="16" cy="11.9" r="3.2" fill="currentColor" fill-opacity=".09"/><circle cx="16" cy="17.6" r="3.2" fill="currentColor" fill-opacity=".09"/><circle cx="16" cy="23.3" r="3.2" fill="currentColor" fill-opacity=".09"/><path d="M14.5 5.1c.3-.5.8-.8 1.4-.9M14.5 10.8c.3-.5.8-.8 1.4-.9M14.5 16.5c.3-.5.8-.8 1.4-.9M14.5 22.2c.3-.5.8-.8 1.4-.9"/></svg>`,
+	// 包子：褶子 + 顶结 + 热气
+	baozi: `<svg viewBox="0 0 32 32" fill="none"><path d="M4.6 21.5c0-6.3 5.1-11.3 11.4-11.3s11.4 5 11.4 11.3c0 2-1.5 3.2-3.7 3.2H8.3c-2.2 0-3.7-1.2-3.7-3.2Z" fill="currentColor" fill-opacity=".09"/><path d="M16 10.6c-2.2 0-3.9 1.3-3.9 3s1.7 3 3.9 3 3.9-1.3 3.9-3-1.7-3-3.9-3Z"/><path d="M16 10.6v3.2M13.5 11.3l1.4 2.3M18.5 11.3l-1.4 2.3M9.9 15.7c.7 1 .7 2 0 3M22.1 15.7c-.7 1-.7 2 0 3"/><path d="M10.3 8.1c-.8-1.2.1-2.1.8-3M16 7.2c-.8-1.3.1-2.2.8-3.1M21.7 8.1c-.8-1.2.1-2.1.8-3"/></svg>`,
+	// 饺子：月牙形 + 捏褶
+	dumpling: `<svg viewBox="0 0 32 32" fill="none"><path d="M3.6 19.6c3 4.7 7.1 7 12.4 7s9.4-2.3 12.4-7c-4.2 2-8.3 3-12.4 3s-8.2-1-12.4-3Z" fill="currentColor" fill-opacity=".09"/><path d="M3.6 19.6C5.2 13.7 10 9.6 16 9.6s10.8 4.1 12.4 10"/><path d="M7 17l1.5 2M10.4 14.4l1.1 2.4M14 13l.6 2.6M18 13l-.6 2.6M21.6 14.4l-1.1 2.4M25 17l-1.5 2"/></svg>`,
+	// 奶茶：杯身 + 吸管 + 珍珠
+	milktea: `<svg viewBox="0 0 32 32" fill="none"><path d="M8.1 10.2h15.8l-1.5 15.6c-.1 1.4-1.3 2.4-2.7 2.4h-7.4c-1.4 0-2.6-1-2.7-2.4L8.1 10.2Z" fill="currentColor" fill-opacity=".08"/><path d="M7.2 10.2h17.6"/><path d="M19.7 9.4 22.9 3"/><path d="M11.2 13.6v10"/><circle cx="14.2" cy="21.6" r="1" fill="currentColor" stroke="none"/><circle cx="17.7" cy="22.8" r=".9" fill="currentColor" stroke="none"/><circle cx="16.3" cy="18.7" r=".8" fill="currentColor" stroke="none"/><path d="M12.2 12.4h2.4"/></svg>`,
+	// 月饼：花边 + 中心花纹
+	mooncake: `<svg viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="11.2" fill="currentColor" fill-opacity=".08"/><circle cx="16" cy="16" r="8.2" stroke-dasharray=".1 3.4"/><circle cx="16" cy="16" r="3.3"/><path d="M16 6.2v2M16 23.8v2M6.2 16h2M23.8 16h2"/></svg>`,
+};
+
+type Slot = {
+	icon: Food;
+	x: number;
+	y: number;
+	size: number;
+	/** 远景：轻微模糊 + 更淡 + 视差更弱 */
+	far?: boolean;
+	/** 内圈：窄屏时隐藏，避免压到正文 */
+	inner?: boolean;
+	/** 手机端位置与尺寸 */
+	mx?: number;
+	my?: number;
+	ms?: number;
+};
+
+// 左右两侧为主，避开正文中央；位置是视口百分比
+const SLOTS: Slot[] = [
+	{ icon: 'ciba', x: 3, y: 24, size: 64, far: true, mx: 0, my: 13, ms: 54 },
+	{ icon: 'tanghulu', x: 93, y: 20, size: 54, far: true, mx: 93, my: 14, ms: 42 },
+	{ icon: 'baozi', x: 6, y: 55, size: 48, mx: 0, my: 86, ms: 38 },
+	{ icon: 'milktea', x: 90, y: 50, size: 56, mx: 93, my: 88, ms: 42 },
+	{ icon: 'dumpling', x: 2, y: 80, size: 52, far: true },
+	{ icon: 'mooncake', x: 95, y: 76, size: 54, far: true },
+	{ icon: 'mooncake', x: 5, y: 42, size: 32, far: true },
+	{ icon: 'dumpling', x: 96, y: 38, size: 34, far: true },
+	{ icon: 'tanghulu', x: 12, y: 33, size: 38, inner: true },
+	{ icon: 'ciba', x: 86, y: 30, size: 40, inner: true },
+	{ icon: 'baozi', x: 14, y: 88, size: 42, inner: true },
+	{ icon: 'milktea', x: 85, y: 86, size: 44, inner: true },
+	{ icon: 'ciba', x: 11, y: 12, size: 32, inner: true },
+	{ icon: 'tanghulu', x: 87, y: 11, size: 34, inner: true },
+];
+
+// 细小的四角星，和云纹/金尘呼应
+const sparks = [
+	{ x: 19, y: 21, size: 11, dur: 9, delay: -2 },
+	{ x: 80, y: 24, size: 9, dur: 11, delay: -6 },
+	{ x: 8, y: 66, size: 8, dur: 10, delay: -4 },
+	{ x: 92, y: 65, size: 10, dur: 8, delay: -1 },
+];
+
+const rand = (seed: number) => {
+	const v = Math.sin(seed * 12.9898) * 43758.5453;
+	return v - Math.floor(v);
+};
+
+const items = SLOTS.map((slot, i) => {
+	const seed = i + 1;
+	const rot = Math.round(-15 + rand(seed * 3.1) * 30);
+	const spin = Math.round(-6 + rand(seed * 5.7) * 12);
+	const dur = (22 + rand(seed * 7.3) * 16).toFixed(1);
+	const breathe = (7 + rand(seed * 8.9) * 5).toFixed(1);
+	const delay = (-rand(seed * 9.9) * 40).toFixed(1);
+	const dx = Math.round(-14 + rand(seed * 11.3) * 28);
+	const dy = Math.round(-12 - rand(seed * 13.7) * 18);
+	const op = (slot.far ? 0.26 + rand(seed * 17.1) * 0.1 : 0.34 + rand(seed * 17.1) * 0.12).toFixed(
+		2,
+	);
+
+	const style = [
+		`--x:${slot.x}%`,
+		`--y:${slot.y}%`,
+		`--s:${slot.size}px`,
+		`--rot:${rot}deg`,
+		`--spin:${spin}deg`,
+		`--dur:${dur}s`,
+		`--breathe:${breathe}s`,
+		`--delay:${delay}s`,
+		`--dx:${dx}px`,
+		`--dy:${dy}px`,
+		`--op:${op}`,
+		`--depth:${slot.far ? 0.55 : 1}`,
+		slot.far ? '--blur:0.8px' : '--blur:0px',
+		slot.mx !== undefined ? `--mx:${slot.mx}%` : '',
+		slot.my !== undefined ? `--my:${slot.my}%` : '',
+		slot.ms !== undefined ? `--ms:${slot.ms}px` : '',
+	]
+		.filter(Boolean)
+		.join(';');
+
+	return { icon: slot.icon, style, far: Boolean(slot.far), inner: Boolean(slot.inner) };
+});
+
+const sparkItems = sparks.map((s) => ({
+	style: `left:${s.x}%;top:${s.y}%;--ss:${s.size}px;--sd:${s.dur}s;--sdelay:${s.delay}s;`,
+}));
+---
+
+<div class="food-layer" aria-hidden="true">
+	<div class="food-items">
+		{items.map((item) => (
+			<span
+				class:list={['food-item', { far: item.far, inner: item.inner }]}
+				style={item.style}
+				data-food={item.icon}
+				set:html={ICONS[item.icon]}
+			/>
+		))}
+	</div>
+	<div class="food-sparks">
+		{sparkItems.map((spark) => (
+			<span class="food-spark" style={spark.style}>
+				<svg viewBox="0 0 24 24" fill="none">
+					<path
+						d="M12 1.8c1 6.2 4 9.2 10.2 10.2C16 13 13 16 12 22.2 11 16 8 13 1.8 12 8 11 11 8 12 1.8Z"
+						fill="currentColor"
+						stroke="none"
+					/>
+				</svg>
+			</span>
+		))}
+	</div>
+</div>
+
+<script>
+	const layer = document.querySelector<HTMLElement>('.food-layer');
+	const canParallax =
+		layer &&
+		!matchMedia('(prefers-reduced-motion: reduce)').matches &&
+		matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+	if (layer && canParallax) {
+		let tx = 0;
+		let ty = 0;
+		let cx = 0;
+		let cy = 0;
+		let raf = 0;
+
+		const tick = () => {
+			cx += (tx - cx) * 0.07;
+			cy += (ty - cy) * 0.07;
+			layer.style.setProperty('--px', `${cx.toFixed(2)}px`);
+			layer.style.setProperty('--py', `${cy.toFixed(2)}px`);
+			raf = Math.abs(tx - cx) > 0.2 || Math.abs(ty - cy) > 0.2 ? requestAnimationFrame(tick) : 0;
+		};
+
+		addEventListener(
+			'pointermove',
+			(e) => {
+				tx = (e.clientX / innerWidth - 0.5) * 26;
+				ty = (e.clientY / innerHeight - 0.5) * 18;
+				if (!raf) raf = requestAnimationFrame(tick);
+			},
+			{ passive: true },
+		);
+	}
+</script>
+
+<style>
+	.food-layer {
+		--px: 0px;
+		--py: 0px;
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+		color: var(--accent);
+		contain: layout paint;
+	}
+
+	.food-items,
+	.food-sparks {
+		position: absolute;
+		inset: 0;
+	}
+
+	.food-item {
+		position: absolute;
+		left: var(--x);
+		top: var(--y);
+		display: block;
+		width: var(--s);
+		height: var(--s);
+		opacity: calc(var(--op) * var(--mul, 1));
+		translate: calc(var(--px) * var(--depth)) calc(var(--py) * var(--depth));
+		animation:
+			food-float var(--dur) ease-in-out var(--delay) infinite,
+			food-breathe var(--breathe) ease-in-out var(--delay) infinite;
+	}
+
+	/* 每样吃食背后一团柔光，增加层次 */
+	.food-item::before {
+		content: '';
+		position: absolute;
+		inset: -46%;
+		border-radius: 50%;
+		background: radial-gradient(circle, var(--glow-1) 0%, transparent 68%);
+		opacity: 0.16;
+		filter: blur(7px);
+	}
+
+	.food-item :global(svg) {
+		position: relative;
+		display: block;
+		width: 100%;
+		height: 100%;
+		stroke: currentColor;
+		stroke-width: 1.35;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		filter: blur(var(--blur, 0px)) drop-shadow(0 0 8px var(--glow-1));
+	}
+
+	/* 暗色背景上稍微亮一点，避免看不见 */
+	:global(:root[data-theme='dark']) .food-item {
+		--mul: 1.2;
+	}
+
+	.food-spark {
+		position: absolute;
+		display: block;
+		width: var(--ss);
+		height: var(--ss);
+		color: var(--glow-1);
+		opacity: 0;
+		animation: spark-twinkle var(--sd) ease-in-out var(--sdelay) infinite;
+	}
+
+	.food-spark :global(svg) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		filter: drop-shadow(0 0 6px var(--glow-1));
+	}
+
+	@keyframes food-float {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) rotate(var(--rot));
+		}
+		50% {
+			transform: translate3d(var(--dx), var(--dy), 0) rotate(calc(var(--rot) + var(--spin)));
+		}
+	}
+
+	@keyframes food-breathe {
+		0%,
+		100% {
+			opacity: calc(var(--op) * var(--mul, 1));
+		}
+		50% {
+			opacity: calc(var(--op) * var(--mul, 1) * 1.28);
+		}
+	}
+
+	@keyframes spark-twinkle {
+		0%,
+		100% {
+			opacity: 0;
+			transform: scale(0.4) rotate(0deg);
+		}
+		45% {
+			opacity: 0.55;
+			transform: scale(1) rotate(18deg);
+		}
+		70% {
+			opacity: 0.2;
+			transform: scale(0.8) rotate(30deg);
+		}
+	}
+
+	/* 平板：正文两侧留白变窄，收掉内圈装饰 */
+	@media (max-width: 1180px) {
+		.food-item.inner {
+			display: none;
+		}
+	}
+
+	/* 手机：只留四角边缘的几枚，避开正文 */
+	@media (max-width: 720px) {
+		.food-item {
+			width: var(--ms, var(--s));
+			height: var(--ms, var(--s));
+			left: var(--mx, var(--x));
+			top: var(--my, var(--y));
+			--mul: 0.72;
+			animation:
+				food-float calc(var(--dur) * 1.4) ease-in-out var(--delay) infinite,
+				food-breathe var(--breathe) ease-in-out var(--delay) infinite;
+		}
+		.food-item:nth-child(n + 5),
+		.food-item.inner,
+		.food-sparks {
+			display: none;
+		}
+		.food-item :global(svg) {
+			filter: drop-shadow(0 0 8px var(--glow-1));
+		}
+		:global(:root[data-theme='dark']) .food-item {
+			--mul: 0.9;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.food-item,
+		.food-spark {
+			animation: none;
+		}
+		.food-item {
+			opacity: calc(var(--op) * var(--mul, 1));
+		}
+		.food-spark {
+			opacity: 0.35;
+		}
+	}
+</style>
