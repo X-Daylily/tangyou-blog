@@ -6,6 +6,7 @@ import Logo from '../components/Logo.astro';
 import Ornament from '../components/Ornament.astro';
 import { SITE_AUTHOR } from '../consts';
 ---
+
 <!doctype html>
 <html lang="zh-CN">
 	<head>
@@ -119,7 +120,9 @@ import { SITE_AUTHOR } from '../consts';
 		<Header />
 		<main id="main-content">
 			<div class="head">
-				<span class="avatar"><Logo size={76} /></span>
+				<span class="avatar">
+					<Logo size={76} />
+				</span>
 				<h1>关于</h1>
 				<p class="subtitle">你好，我是{SITE_AUTHOR}。</p>
 			</div>
@@ -128,20 +131,36 @@ import { SITE_AUTHOR } from '../consts';
 
 			<div class="card glass rise">
 				<h2>关于我</h2>
-				<p>一个还在学习和折腾的人。喜欢把遇到的问题、走过的弯路记下来，方便以后的自己，也希望对路过的你有用。</p>
+				<p>
+					一个还在学习和折腾的人。喜欢把遇到的问题、走过的弯路记下来，方便以后的自己，也希望对路过的你有用。
+				</p>
 
 				<h2>为什么写博客</h2>
-				<p>记录学习过程、整理项目复盘、坚持输出。写作会逼着我把一件事想清楚，而公开写作会让这件事更有分量。</p>
+				<p>
+					记录学习过程、整理项目复盘、坚持输出。写作会逼着我把一件事想清楚，而公开写作会让这件事更有分量。
+				</p>
 
 				<h2>关于这个博客</h2>
-				<p>用 Astro 构建，部署在 Cloudflare Pages，源码放在 GitHub。没有评论区和广告，只留下文字。</p>
+				<p>
+					用 Astro 构建，部署在 Cloudflare Pages，源码放在 GitHub。没有评论区和广告，只留下文字。
+				</p>
 
 				<h2>联系我</h2>
 				<ul class="links">
-					<li><a href="https://github.com/X-Daylily" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-					<li><a href="/rss.xml">RSS 订阅</a></li>
-					<li><a href="/blog/">全部文章</a></li>
-					<li><a href="/tags/">按标签浏览</a></li>
+					<li>
+						<a href="https://github.com/X-Daylily" target="_blank" rel="noopener noreferrer">
+							GitHub
+						</a>
+					</li>
+					<li>
+						<a href="/rss.xml">RSS 订阅</a>
+					</li>
+					<li>
+						<a href="/blog/">全部文章</a>
+					</li>
+					<li>
+						<a href="/tags/">按标签浏览</a>
+					</li>
 				</ul>
 			</div>
 		</main>

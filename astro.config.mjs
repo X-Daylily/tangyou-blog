@@ -1,7 +1,6 @@
 // @ts-check
 
 import mdx from '@astrojs/mdx';
-import sitemap, { ChangeFreqEnum } from '@astrojs/sitemap';
 import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
@@ -9,22 +8,8 @@ export default defineConfig({
 	site: 'https://tangyou-blog.pages.dev',
 	// 站内链接预取，跳转更快
 	prefetch: true,
-	integrations: [
-		mdx(),
-		sitemap({
-			serialize(item) {
-				if (item.url.includes('/blog/')) {
-					item.changefreq = ChangeFreqEnum.WEEKLY;
-					item.priority = 0.8;
-				} else {
-					item.changefreq = ChangeFreqEnum.MONTHLY;
-					item.priority = 0.5;
-				}
-				item.lastmod = new Date().toISOString();
-				return item;
-			},
-		}),
-	],
+	// 站点地图由 src/pages/sitemap.xml.ts 按文章真实日期生成
+	integrations: [mdx()],
 	markdown: {
 		shikiConfig: {
 			theme: 'github-dark',

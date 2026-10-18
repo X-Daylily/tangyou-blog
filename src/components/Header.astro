@@ -23,18 +23,18 @@ const DUST = Array.from({ length: 14 }, (_, i) => {
 <div class="ambient" aria-hidden="true">
 	<div class="cursor-glow"></div>
 	<div class="dust">
-		{
-			DUST.map((d) => (
-				<span
-					style={`left:${d.x}%; width:${d.size}px; height:${d.size}px; animation-duration:${d.dur}s; animation-delay:${d.delay}s; --dx:${d.dx}px;`}
-				/>
-			))
-		}
+		{DUST.map((d) => (
+			<span
+				style={`left:${d.x}%; width:${d.size}px; height:${d.size}px; animation-duration:${d.dur}s; animation-delay:${d.delay}s; --dx:${d.dx}px;`}
+			/>
+		))}
 	</div>
 </div>
 
 <header>
-	<a href="#main-content" class="skip-link">跳到正文</a>
+	<a href="#main-content" class="skip-link">
+		跳到正文
+	</a>
 	<div class="topbar">
 		<a class="brand" href="/">
 			<Logo size={40} />
@@ -82,7 +82,9 @@ const DUST = Array.from({ length: 14 }, (_, i) => {
 	</div>
 
 	<!-- 阅读进度条（纯装饰，进度由脚本写入） -->
-	<div class="progress" aria-hidden="true"><span class="progress-bar"></span></div>
+	<div class="progress" aria-hidden="true">
+		<span class="progress-bar"></span>
+	</div>
 </header>
 
 <button class="to-top" type="button" aria-label="回到顶部" title="回到顶部">
@@ -184,7 +186,7 @@ const DUST = Array.from({ length: 14 }, (_, i) => {
 						}
 					}
 				},
-				{ rootMargin: '0px 0px -8% 0px', threshold: 0.06 }
+				{ rootMargin: '0px 0px -8% 0px', threshold: 0.06 },
 			);
 			items.forEach((el) => io.observe(el));
 		}
@@ -218,7 +220,7 @@ const DUST = Array.from({ length: 14 }, (_, i) => {
 					ty = e.clientY;
 					if (!raf) raf = requestAnimationFrame(tick);
 				},
-				{ passive: true }
+				{ passive: true },
 			);
 		}
 	}

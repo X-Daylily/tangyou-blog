@@ -11,7 +11,7 @@ export async function GET(context) {
 		title: SITE_TITLE,
 		description: SITE_DESCRIPTION,
 		site: context.site,
-		customData: '<language>zh-cn</language>',
+		customData: `<language>zh-cn</language><lastBuildDate>${new Date().toUTCString()}</lastBuildDate>`,
 		items: posts.map((post) => ({
 			title: post.data.title,
 			description: post.data.description,

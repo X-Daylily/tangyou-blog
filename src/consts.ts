@@ -8,7 +8,9 @@ export const SITE_URL = 'https://tangyou-blog.pages.dev';
 
 // 顶部/页脚的社交入口：想增删就改这个数组，
 // 可用图标见 src/components/SocialLinks.astro（github / rss / mail）
-export const SOCIALS = [
+export type SocialIcon = 'github' | 'rss' | 'mail';
+
+export const SOCIALS: { label: string; href: string; icon: SocialIcon }[] = [
 	{ label: 'GitHub', href: 'https://github.com/X-Daylily', icon: 'github' },
 	{ label: 'RSS', href: '/rss.xml', icon: 'rss' },
-] as const;
+];

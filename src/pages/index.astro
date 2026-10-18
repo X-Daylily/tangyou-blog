@@ -5,17 +5,46 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import Ornament from '../components/Ornament.astro';
-import { SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SOCIALS, SITE_AUTHOR, SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '../consts';
 
 const posts = (await getCollection('blog'))
 	.filter((p) => !p.data.draft)
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 6);
+
+const site = Astro.site ?? new URL(SITE_URL);
+const homeUrl = new URL('/', site).href;
+const personId = new URL('/#person', site).href;
+
+// 首页结构化数据：站点 + 作者，方便搜索引擎建立实体
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@graph': [
+		{
+			'@type': 'WebSite',
+			'@id': homeUrl,
+			url: homeUrl,
+			name: SITE_TITLE,
+			description: SITE_DESCRIPTION,
+			inLanguage: 'zh-CN',
+			publisher: { '@id': personId },
+		},
+		{
+			'@type': 'Person',
+			'@id': personId,
+			name: SITE_AUTHOR,
+			url: new URL('/about/', site).href,
+			sameAs: SOCIALS.filter((s) => s.href.startsWith('http')).map((s) => s.href),
+		},
+	],
+};
 ---
+
 <!doctype html>
 <html lang="zh-CN">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 		<style>
 			main {
 				max-width: 900px;
@@ -185,7 +214,9 @@ const posts = (await getCollection('blog'))
 				padding: 1.15rem 0.3rem 1.15rem 1.5rem;
 				color: var(--text);
 				text-decoration: none;
-				transition: padding-left 0.35s ease, color 0.35s ease;
+				transition:
+					padding-left 0.35s ease,
+					color 0.35s ease;
 			}
 			.post-list a::before {
 				content: '';
@@ -197,7 +228,9 @@ const posts = (await getCollection('blog'))
 				height: 6px;
 				background: var(--grad-gold);
 				opacity: 0.55;
-				transition: opacity 0.35s ease, box-shadow 0.35s ease;
+				transition:
+					opacity 0.35s ease,
+					box-shadow 0.35s ease;
 			}
 			.post-list li + li a {
 				border-top: 1px solid var(--border);
@@ -267,13 +300,19 @@ const posts = (await getCollection('blog'))
 					</h1>
 					<p class="lead">{SITE_DESCRIPTION}</p>
 					<div class="cta">
-						<a class="btn" href="/blog/">阅读文章</a>
-						<a class="btn ghost" href="/about/">关于我</a>
+						<a class="btn" href="/blog/">
+							阅读文章
+						</a>
+						<a class="btn ghost" href="/about/">
+							关于我
+						</a>
 					</div>
 				</div>
 			</section>
 
-			<div data-reveal><Ornament /></div>
+			<div data-reveal>
+				<Ornament />
+			</div>
 
 			<section>
 				<div class="section-head" data-reveal>
@@ -281,18 +320,16 @@ const posts = (await getCollection('blog'))
 					<a href="/blog/">全部 →</a>
 				</div>
 				<ul class="post-list">
-					{
-						posts.map((post, i) => (
-							<li data-reveal style={`--rd:${(i * 0.07).toFixed(2)}s`}>
-								<a href={`/blog/${post.id}/`}>
-									<span class="t">{post.data.title}</span>
-									<span class="d">
-										<FormattedDate date={post.data.pubDate} />
-									</span>
-								</a>
-							</li>
-						))
-					}
+					{posts.map((post, i) => (
+						<li data-reveal style={`--rd:${(i * 0.07).toFixed(2)}s`}>
+							<a href={`/blog/${post.id}/`}>
+								<span class="t">{post.data.title}</span>
+								<span class="d">
+									<FormattedDate date={post.data.pubDate} />
+								</span>
+							</a>
+						</li>
+					))}
 				</ul>
 			</section>
 		</main>

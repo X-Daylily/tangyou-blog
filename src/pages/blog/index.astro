@@ -12,6 +12,7 @@ const posts = (await getCollection('blog'))
 	.filter((post) => !post.data.draft)
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
+
 <!doctype html>
 <html lang="zh-CN">
 	<head>
@@ -229,47 +230,51 @@ const posts = (await getCollection('blog'))
 				<p>共 {posts.length} 篇</p>
 			</div>
 
-			<div data-reveal><Ornament /></div>
+			<div data-reveal>
+				<Ornament />
+			</div>
 
-			{posts.length === 0 && <p class="empty">还没有文章，去 <code>src/content/blog/</code> 写一篇吧。</p>}
+			{posts.length === 0 && (
+				<p class="empty">
+					还没有文章，去 <code>src/content/blog/</code> 写一篇吧。
+				</p>
+			)}
 
 			<ul class="posts">
-				{
-					posts.map((post, i) => (
-						<li data-reveal style={`--rd:${(i * 0.08).toFixed(2)}s`}>
-							<article class="card" data-tilt>
-								{post.data.heroImage && (
-									<a class="media" href={`/blog/${post.id}/`} tabindex="-1" aria-hidden="true">
-										<Image
-											src={post.data.heroImage}
-											alt=""
-											widths={[320, 480, 720]}
-											sizes="(max-width: 640px) 100vw, 320px"
-										/>
-									</a>
+				{posts.map((post, i) => (
+					<li data-reveal style={`--rd:${(i * 0.08).toFixed(2)}s`}>
+						<article class="card" data-tilt>
+							{post.data.heroImage && (
+								<a class="media" href={`/blog/${post.id}/`} tabindex="-1" aria-hidden="true">
+									<Image
+										src={post.data.heroImage}
+										alt=""
+										widths={[320, 480, 720]}
+										sizes="(max-width: 640px) 100vw, 320px"
+									/>
+								</a>
+							)}
+							<div class="body">
+								<h2 class="title">
+									<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+								</h2>
+								<p class="desc">{post.data.description}</p>
+								{post.data.tags.length > 0 && (
+									<ul class="card-tags">
+										{post.data.tags.map((tag) => (
+											<li>
+												<a href={`/tags/${tag}/`}>#{tag}</a>
+											</li>
+										))}
+									</ul>
 								)}
-								<div class="body">
-									<h2 class="title">
-										<a href={`/blog/${post.id}/`}>{post.data.title}</a>
-									</h2>
-									<p class="desc">{post.data.description}</p>
-									{post.data.tags.length > 0 && (
-										<ul class="card-tags">
-											{post.data.tags.map((tag) => (
-												<li>
-													<a href={`/tags/${tag}/`}>#{tag}</a>
-												</li>
-											))}
-										</ul>
-									)}
-									<span class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</span>
-								</div>
-							</article>
-						</li>
-					))
-				}
+								<span class="date">
+									<FormattedDate date={post.data.pubDate} />
+								</span>
+							</div>
+						</article>
+					</li>
+				))}
 			</ul>
 		</main>
 		<Footer />
@@ -293,7 +298,7 @@ const posts = (await getCollection('blog'))
 					card.style.setProperty('--ry', `${(px * 11).toFixed(2)}deg`);
 					card.style.setProperty('--rx', `${(-py * 8).toFixed(2)}deg`);
 				},
-				{ passive: true }
+				{ passive: true },
 			);
 			card.addEventListener('pointerleave', () => {
 				card.style.removeProperty('--rx');

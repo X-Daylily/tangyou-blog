@@ -76,12 +76,9 @@
 
 	/* 光与影：多层营造厚度 */
 	--glow: 0 14px 52px rgba(198, 152, 78, 0.3);
-	--shadow-sm:
-		0 1px 2px rgba(120, 92, 48, 0.06), 0 4px 14px rgba(120, 92, 48, 0.07);
-	--shadow:
-		0 2px 4px rgba(120, 92, 48, 0.06), 0 14px 40px rgba(120, 92, 48, 0.14);
-	--shadow-lg:
-		0 4px 8px rgba(120, 92, 48, 0.07), 0 28px 70px rgba(120, 92, 48, 0.22);
+	--shadow-sm: 0 1px 2px rgba(120, 92, 48, 0.06), 0 4px 14px rgba(120, 92, 48, 0.07);
+	--shadow: 0 2px 4px rgba(120, 92, 48, 0.06), 0 14px 40px rgba(120, 92, 48, 0.14);
+	--shadow-lg: 0 4px 8px rgba(120, 92, 48, 0.07), 0 28px 70px rgba(120, 92, 48, 0.22);
 	--inner-top: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 
 	/* 形状 */
@@ -125,13 +122,7 @@
 	--seal: #c8503c;
 	--seal-ink: #fff3ea;
 
-	--grad-gold: linear-gradient(
-		105deg,
-		#c9963f 0%,
-		#e3bd72 40%,
-		#f2d79a 60%,
-		#cfa057 100%
-	);
+	--grad-gold: linear-gradient(105deg, #c9963f 0%, #e3bd72 40%, #f2d79a 60%, #cfa057 100%);
 	/* 用于渐变文字：在夜色背景上仍保证可读 */
 	--grad-ink: linear-gradient(
 		105deg,
@@ -182,13 +173,7 @@
 		--accent-contrast: #241a08;
 		--seal: #c8503c;
 		--seal-ink: #fff3ea;
-		--grad-gold: linear-gradient(
-			105deg,
-			#c9963f 0%,
-			#e3bd72 40%,
-			#f2d79a 60%,
-			#cfa057 100%
-		);
+		--grad-gold: linear-gradient(105deg, #c9963f 0%, #e3bd72 40%, #f2d79a 60%, #cfa057 100%);
 		--grad-ink: linear-gradient(
 			105deg,
 			#d9ab5e 0%,
@@ -520,13 +505,7 @@ th {
 	border-radius: var(--radius-lg);
 	background:
 		linear-gradient(var(--surface), var(--surface)) padding-box,
-		linear-gradient(
-				135deg,
-				var(--glow-1),
-				var(--glow-2) 42%,
-				var(--glow-3) 68%,
-				var(--glow-1)
-			)
+		linear-gradient(135deg, var(--glow-1), var(--glow-2) 42%, var(--glow-3) 68%, var(--glow-1))
 			border-box;
 	backdrop-filter: blur(20px) saturate(165%);
 	-webkit-backdrop-filter: blur(20px) saturate(165%);

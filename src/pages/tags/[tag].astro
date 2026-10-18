@@ -23,6 +23,7 @@ export async function getStaticPaths() {
 const { tag } = Astro.params;
 const { posts } = Astro.props;
 ---
+
 <!doctype html>
 <html lang="zh-CN">
 	<head>
@@ -108,24 +109,24 @@ const { posts } = Astro.props;
 			<div class="page-title">
 				<h1>标签：{tag}</h1>
 				<p>共 {posts.length} 篇</p>
-				<a class="back" href="/tags/">← 全部标签</a>
+				<a class="back" href="/tags/">
+					← 全部标签
+				</a>
 			</div>
 
 			<Ornament />
 
 			<ul class="list">
-				{
-					posts.map((post) => (
-						<li>
-							<a href={`/blog/${post.id}/`}>
-								<span class="t">{post.data.title}</span>
-								<span class="d">
-									<FormattedDate date={post.data.pubDate} />
-								</span>
-							</a>
-						</li>
-					))
-				}
+				{posts.map((post) => (
+					<li>
+						<a href={`/blog/${post.id}/`}>
+							<span class="t">{post.data.title}</span>
+							<span class="d">
+								<FormattedDate date={post.data.pubDate} />
+							</span>
+						</a>
+					</li>
+				))}
 			</ul>
 		</main>
 		<Footer />

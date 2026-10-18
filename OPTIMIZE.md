@@ -78,6 +78,7 @@ const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 5);
 ---
+
 <!doctype html>
 <html lang="zh-CN">
 	<head>
@@ -88,14 +89,18 @@ const posts = (await getCollection('blog'))
 		<main id="main-content">
 			<h1>你好，我是{SITE_AUTHOR} 👋</h1>
 			<p>{SITE_DESCRIPTION}</p>
-			<p><a href="/blog/">查看全部文章 →</a></p>
+			<p>
+				<a href="/blog/">查看全部文章 →</a>
+			</p>
 			<hr />
 			<h2>最新文章</h2>
 			<ul class="post-list">
 				{posts.map((post) => (
 					<li>
 						<a href={`/blog/${post.id}/`}>{post.data.title}</a>
-						<span class="date"><FormattedDate date={post.data.pubDate} /></span>
+						<span class="date">
+							<FormattedDate date={post.data.pubDate} />
+						</span>
 					</li>
 				))}
 			</ul>
@@ -134,6 +139,7 @@ import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { SITE_AUTHOR } from '../consts';
 ---
+
 <!doctype html>
 <html lang="zh-CN">
 	<head>
@@ -144,7 +150,9 @@ import { SITE_AUTHOR } from '../consts';
 		<main id="main-content">
 			<h1>关于</h1>
 			<p>在这里写你是谁、在做什么、为什么写博客。</p>
-			<p>联系方式：<a href="mailto:you@example.com">you@example.com</a></p>
+			<p>
+				联系方式：<a href="mailto:you@example.com">you@example.com</a>
+			</p>
 		</main>
 		<Footer />
 	</body>
@@ -210,11 +218,11 @@ Select-String -Path src\**\*.astro -Pattern 'lang="en"'
 **`src/components/FormattedDate.astro`** —— 第 10 行的 `'en-us'` 改成：
 
 ```astro
-	{date.toLocaleDateString('zh-CN', {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-	})}
+{date.toLocaleDateString('zh-CN', {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
+})}
 ```
 
 效果：`2026年10月13日`
@@ -514,12 +522,8 @@ export async function getStaticPaths() {
 		params: { slug: post.id },
 		props: {
 			post,
-			prev: posts[i - 1]
-				? { title: posts[i - 1].data.title, id: posts[i - 1].id }
-				: null,
-			next: posts[i + 1]
-				? { title: posts[i + 1].data.title, id: posts[i + 1].id }
-				: null,
+			prev: posts[i - 1] ? { title: posts[i - 1].data.title, id: posts[i - 1].id } : null,
+			next: posts[i + 1] ? { title: posts[i + 1].data.title, id: posts[i + 1].id } : null,
 		},
 	}));
 }
@@ -533,6 +537,7 @@ type Props = {
 const { post, prev, next } = Astro.props;
 const { Content, headings } = await render(post);
 ---
+
 <BlogPost
 	{...post.data}
 	headings={headings}
@@ -546,7 +551,7 @@ const { Content, headings } = await render(post);
 
 **`src/utils/reading-time.ts`** —— 新建：
 
-```ts
+````ts
 // 粗略估算阅读时长：中文按字数、英文按词数
 export function getReadingTime(body: string | undefined): string {
 	if (!body) return '1 分钟';
@@ -556,7 +561,7 @@ export function getReadingTime(body: string | undefined): string {
 	const minutes = Math.max(1, Math.round(cjk / 350 + words / 200));
 	return `${minutes} 分钟`;
 }
-```
+````
 
 ## B4. 文章列表：中文 + 过滤草稿 + 响应式图片
 
@@ -565,9 +570,8 @@ export function getReadingTime(body: string | undefined): string {
 frontmatter（第 10–12 行）：
 
 ```astro
-const posts = (await getCollection('blog'))
-	.filter((post) => !post.data.draft)
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const posts = (await getCollection('blog')) .filter((post) => !post.data.draft) .sort((a, b) =>
+b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ```
 
 `<html lang="en">` → `<html lang="zh-CN">`
@@ -578,7 +582,13 @@ const posts = (await getCollection('blog'))
 
 ```astro
 {post.data.heroImage && (
-	<Image src={post.data.heroImage} alt={post.data.title} layout="constrained" width={720} height={360} />
+	<Image
+		src={post.data.heroImage}
+		alt={post.data.title}
+		layout="constrained"
+		width={720}
+		height={360}
+	/>
 )}
 ```
 
@@ -772,12 +782,12 @@ textarea:focus-visible {
 3. 删掉移动端隐藏社交链接的规则，改成缩小尺寸：
 
 ```css
-	@media (max-width: 720px) {
-		.social-links svg {
-			width: 24px;
-			height: 24px;
-		}
+@media (max-width: 720px) {
+	.social-links svg {
+		width: 24px;
+		height: 24px;
 	}
+}
 ```
 
 > 记得给所有 `target="_blank"` 的链接补上 `rel="noopener noreferrer"`（A4/A5 已提）。
@@ -833,6 +843,7 @@ export async function getStaticPaths() {
 const { tag } = Astro.params;
 const { posts } = Astro.props;
 ---
+
 <!doctype html>
 <html lang="zh-CN">
 	<head>
@@ -862,7 +873,9 @@ const { posts } = Astro.props;
 {tags.length > 0 && (
 	<ul class="tags">
 		{tags.map((tag) => (
-			<li><a href={`/tags/${tag}/`}>#{tag}</a></li>
+			<li>
+				<a href={`/tags/${tag}/`}>#{tag}</a>
+			</li>
 		))}
 	</ul>
 )}
@@ -900,16 +913,14 @@ export default defineConfig({
 ---
 // 只保留一份社交链接，Header 和 Footer 都引用它
 ---
-<div class="social-links">
-	<!-- 把原来的三个 <a>…</a> 粘到这里，href 改成你的 -->
-</div>
+
+<div class="social-links"><!-- 把原来的三个 <a>…</a> 粘到这里，href 改成你的 --></div>
 ```
 
 Header/Footer 里改成：
 
 ```astro
-import SocialLinks from './SocialLinks.astro';
-...
+import SocialLinks from './SocialLinks.astro'; ...
 <SocialLinks />
 ```
 
@@ -930,12 +941,12 @@ npm i -D @astrojs/check typescript prettier prettier-plugin-astro
 
 ```json
 {
-  "useTabs": true,
-  "semi": true,
-  "singleQuote": true,
-  "printWidth": 100,
-  "plugins": ["prettier-plugin-astro"],
-  "overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }]
+	"useTabs": true,
+	"semi": true,
+	"singleQuote": true,
+	"printWidth": 100,
+	"plugins": ["prettier-plugin-astro"],
+	"overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }]
 }
 ```
 
@@ -983,22 +994,78 @@ npm run build          # 构建通过
 npm run preview        # 本地预览成品
 ```
 
-- [ ] 首页 / 关于 / 页脚 / 社交链接都是你自己的内容
-- [ ] `lang="zh-CN"` 无遗漏、日期显示为中文
-- [ ] 文章页分享预览是 `article` 类型且带正确 OG 图
-- [ ] 构建产物里没有 draft 文章，draft 带 `noindex`
-- [ ] 暗色系统下页面可读、不刺眼
-- [ ] Tab 键能看见焦点、有「跳到正文」
-- [ ] 字体是 `.woff2`、头图是 eager/fetchpriority high
+- [x] 首页 / 关于 / 页脚 / 社交链接都是你自己的内容
+- [x] `lang="zh-CN"` 无遗漏、日期显示为中文
+- [x] 文章页分享预览是 `article` 类型且带正确 OG 图
+- [x] 构建产物里没有 draft 文章，draft 带 `noindex`
+- [x] 暗色系统下页面可读、不刺眼
+- [x] Tab 键能看见焦点、有「跳到正文」
+- [x] 字体是 `.woff2`、头图是 eager/fetchpriority high
 
 ---
 
 ## 需要补充的信息
 
-批次 A 里这几处还等你填：
+批次 A 里这几处已于 2026-10-18 填好：
 
-1. **名字/昵称** → `src/consts.ts` 的 `SITE_AUTHOR`
-2. **社交链接**（GitHub / 邮箱 / 其他）→ `Header.astro`、`Footer.astro`
+1. **名字/昵称** → `src/consts.ts` 的 `SITE_AUTHOR`：糖油糍粑
+2. **社交链接** → `src/consts.ts` 的 `SOCIALS`（GitHub + RSS，增删改这一个数组即可）
 3. **站点简介** → `SITE_DESCRIPTION`
 
-填好后如果想让我帮你复查或补完某一块，直接说。
+---
+
+# 批次 G · 工程化与部署加固（2026-10-18 已完成）
+
+> 这一批是后来补做的；和前面 A–F 的代码冲突时，以这一批为准。
+
+## G1. 类型检查 + 格式化
+
+```powershell
+npm run check          # astro check
+npm run format         # Prettier 格式化
+npm run format:check   # 只检查不改文件（CI 用）
+```
+
+配置在 `.prettierrc`：tab 缩进、单引号、`printWidth: 100`、Astro 插件。
+
+## G2. CI
+
+`.github/workflows/ci.yml`：push 到 `main` 或开 PR 时自动执行 `npm ci` → `npm run check` → `npm run build`。构建失败会直接标在提交旁边。
+
+## G3. 部署缓存与安全头
+
+`public/_headers` 会被 Cloudflare Pages 自动读取：
+
+- `/_astro/*`：一年 `immutable` 强缓存（文件名带哈希，内容变则换名）
+- `sitemap.xml` / `rss.xml`：1 小时
+- 全站：`nosniff`、`SAMEORIGIN`、`strict-origin-when-cross-origin`、关闭地理定位等权限
+
+## G4. 站点地图改为自定义路由
+
+`@astrojs/sitemap` 已移除（不要再加回来）。改用 `src/pages/sitemap.xml.ts`：
+
+- 文章用真实的 `pubDate` / `updatedDate` 作为 `lastmod`
+- 列表页、标签页取该页最新文章的日期
+- 静态页（关于）不写 `lastmod`，避免每次构建都告诉搜索引擎「全站更新」
+
+`robots.txt` 与 `BaseHead` 里的 sitemap 地址已同步为 `/sitemap.xml`。
+
+## G5. 结构化数据
+
+- 首页：`WebSite` + `Person`（`sameAs` 取自 `SOCIALS` 中的外链）
+- 文章页：`BlogPosting` + `BreadcrumbList`，带 `inLanguage` / `keywords` / `isPartOf`
+
+## G6. 其他修复
+
+- `/tags/` 之前会把草稿文章的标签也统计进去（点开却是 404），已过滤 draft
+- `SOCIALS` 增加 `SocialIcon` 类型，以后加 `mail` 图标不会再类型报错
+- 站内 RSS 链接不再 `target="_blank"`
+- 导航当前页加 `aria-current="page"`
+- 删除 starter 遗留的 6 张未使用占位图（约 190 KB）
+- 删除空的 `CLAUDE.md`
+
+## 维护提醒
+
+- 新增文章不用手改 sitemap，构建时自动收录
+- 换域名：同时改 `astro.config.mjs` 的 `site` 和 `src/consts.ts` 的 `SITE_URL`
+- Cloudflare Pages：构建命令 `npm run build`，输出目录 `dist`

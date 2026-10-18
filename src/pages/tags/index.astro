@@ -5,7 +5,7 @@ import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import Ornament from '../../components/Ornament.astro';
 
-const posts = await getCollection('blog');
+const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
 const counts = new Map<string, number>();
 for (const post of posts) {
 	for (const tag of post.data.tags) {
@@ -14,6 +14,7 @@ for (const post of posts) {
 }
 const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]);
 ---
+
 <!doctype html>
 <html lang="zh-CN">
 	<head>
@@ -96,22 +97,22 @@ const tags = [...counts.entries()].sort((a, b) => b[1] - a[1]);
 
 			<Ornament />
 
-			{
-				tags.length === 0 ? (
-					<p class="empty">还没有标签。在文章 frontmatter 里加 <code>tags: ['示例']</code> 即可。</p>
-				) : (
-					<ul class="tags">
-						{tags.map(([tag, count]) => (
-							<li>
-								<a href={`/tags/${tag}/`}>
-									#{tag}
-									<span class="n">{count}</span>
-								</a>
-							</li>
-						))}
-					</ul>
-				)
-			}
+			{tags.length === 0 ? (
+				<p class="empty">
+					还没有标签。在文章 frontmatter 里加 <code>tags: ['示例']</code> 即可。
+				</p>
+			) : (
+				<ul class="tags">
+					{tags.map(([tag, count]) => (
+						<li>
+							<a href={`/tags/${tag}/`}>
+								#{tag}
+								<span class="n">{count}</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			)}
 		</main>
 		<Footer />
 	</body>
